@@ -24,10 +24,10 @@ export const Dashboard: React.FC = () => {
     },
     {
       title: 'Revenue Today',
-      value: '$1,248',
+      value: '£1,248',
       trend: { value: 8, isPositive: true },
       icon: DollarSign,
-      description: 'Avg. $52 per booking',
+      description: 'Avg. £52 per booking',
     },
     {
       title: 'Occupancy Rate',

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Mail, AlertCircle, Loader2, History, Eye, Code, Save, RotateCcw } from 'lucide-react';
+import { Mail, AlertCircle, History, Eye, Code, Save, RotateCcw, Plus } from 'lucide-react';
 import { useCompany } from '../../contexts/CompanyContext';
 import { Button } from '../../components/common/Button';
 import { FormField } from '../../components/common/FormField';
@@ -203,79 +202,95 @@ export const Emails: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-dark-text-primary">Email Templates</h1>
-        </div>
+    <div className="space-y-8 p-6">
+    {/* Header */}
+    <div className="flex items-center justify-between">
+      <h1 className="text-3xl font-bold text-dark-text-primary">Email Templates</h1>
+      <Button variant="primary" className="flex items-center gap-2">
+        <Plus className="w-4 h-4" />
+        New Template
+      </Button>
+    </div>
+  
+    {/* Error State */}
+    {error && (
+      <div className="p-4 bg-red-500/10 text-red-400 rounded-lg flex items-center gap-2">
+        <AlertCircle className="w-5 h-5" />
+        {error}
       </div>
-
-      {/* Error State */}
-      {error && (
-        <div className="p-4 bg-red-400/10 text-red-400 rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-5 h-5" />
-          {error}
-        </div>
-      )}
-
-      {/* Loading State */}
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center space-y-4">
-            <Loader2 className="w-8 h-8 text-dark-accent animate-spin mx-auto" />
-            <p className="text-dark-text-secondary">Loading templates...</p>
+    )}
+  
+    {/* Loading State */}
+    {isLoading ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="p-6 bg-dark-secondary border border-dark-border rounded-lg animate-pulse">
+            <div className="h-6 w-2/3 bg-gray-500/20 rounded mb-2"></div>
+            <div className="h-4 w-1/2 bg-gray-500/20 rounded"></div>
           </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {templates.map(template => (
-            <div
-              key={template.id}
-              className="bg-dark-secondary rounded-lg border border-dark-border p-6"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-dark-accent/10 rounded-lg">
-                    <Mail className="w-5 h-5 text-dark-accent" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-dark-text-primary">{template.name}</h3>
-                    <p className="text-sm text-dark-text-secondary">{template.subject}</p>
-                  </div>
+        ))}
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {templates.map((template) => (
+          <div
+            key={template.id}
+            className="bg-dark-secondary border border-dark-border p-6 rounded-lg shadow-lg transition-all hover:scale-[1.02]"
+          >
+            <div className="flex items-center justify-between">
+              {/* Template Info */}
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-dark-accent/10 rounded-lg">
+                  <Mail className="w-5 h-5 text-dark-accent" />
                 </div>
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={template.is_enabled}
-                      onChange={() => handleToggleTemplate(template)}
-                      className="w-4 h-4 text-dark-accent border-dark-border rounded
-                        focus:ring-dark-accent bg-dark-secondary"
-                    />
-                    <span className="text-sm text-dark-text-secondary">
-                      {template.is_enabled ? 'Enabled' : 'Disabled'}
-                    </span>
-                  </label>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleEditTemplate(template)}
-                    className="flex items-center gap-2"
-                  >
-                    <Code className="w-4 h-4" />
-                    Edit Template
-                  </Button>
+                <div>
+                  <h3 className="font-medium text-dark-text-primary">{template.name}</h3>
+                  <p className="text-sm text-dark-text-secondary">{template.subject}</p>
                 </div>
               </div>
+  
+              {/* Toggle & Actions */}
+              <div className="flex items-center gap-4">
+                {/* Toggle Switch */}
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    title={`Enable ${template.name}`}
+                    checked={template.is_enabled}
+                    onChange={() => handleToggleTemplate(template)}
+                    className="sr-only peer"
+                  />
+                  <div
+                    className="w-10 h-5 bg-gray-300 peer-focus:ring-2 peer-focus:ring-dark-accent rounded-full peer
+                      peer-checked:bg-dark-accent relative transition-all"
+                  >
+                    <div
+                      className="absolute left-1 top-1 w-3.5 h-3.5 bg-white rounded-full transition-transform
+                        peer-checked:translate-x-5"
+                    />
+                  </div>
+                </label>
+  
+                {/* Edit Button */}
+                <Button
+                  variant="outline"
+                  onClick={() => handleEditTemplate(template)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-dark-border text-dark-text-primary hover:bg-dark-accent hover:text-white transition-all"
+                >
+                  <Code className="w-4 h-4" />
+                  Edit
+                </Button>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+      ))}
+    </div>
+  )}
 
-      {/* Template Editor Modal */}
-      <Modal
-        isOpen={showEditor}
-        onClose={() => setShowEditor(false)}
+    {/* Template Editor Modal */}
+    <Modal
+      isOpen={showEditor}
+      onClose={() => setShowEditor(false)}
         title="Edit Email Template"
         className="max-w-4xl"
       >
@@ -287,10 +302,13 @@ export const Emails: React.FC = () => {
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-dark-text-secondary">
+            <label htmlFor="htmlContent" className="block text-sm font-medium text-dark-text-secondary">
               HTML Content
             </label>
             <textarea
+              id="htmlContent"
+              aria-label="HTML Content"
+              placeholder="Enter HTML content for the email template"
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
               rows={15}
