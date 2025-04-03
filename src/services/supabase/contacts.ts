@@ -30,7 +30,7 @@ export async function findContactByEmailOrMobile(
     .select(`
       *,
       tags:contact_tags(
-        tag:tags(*)
+        tag:tags(id, name, colour, icon)
       )
     `)
     .eq('company_id', companyId);
@@ -64,20 +64,15 @@ export async function fetchContacts({
 
     // Build query
     let query = supabase
-      .from('contacts')
-      .select(`
-          *,
-          tags:contact_tags(
-            tag:tags(
-              id,
-              name,
-              color,
-              icon
-            )
-          )
-        `, { count: 'exact' })
-      .eq('company_id', companyId)
-      .range(offset, offset + pageSize - 1);
+    .from('contacts')
+    .select(`
+      *,
+      contact_tags:contact_tags (
+        tag:tags(id, name, icon, color)
+      )
+    `, { count: 'exact' })
+    .eq('company_id', companyId)
+    .range(offset, offset + pageSize - 1);
 
     // Apply filters
     if (filters) {
@@ -88,7 +83,7 @@ export async function fetchContacts({
           `email.ilike.%${filters.search}%`
         );
       }
-      if (filters.isActive !== undefined) {
+    /*  if (filters.isActive !== undefined) {
         query = query.eq('is_active', filters.isActive);
       }
       if (filters.source) {
@@ -96,7 +91,7 @@ export async function fetchContacts({
       }
       if (filters.contactMethod) {
         query = query.eq('preferred_contact_method', filters.contactMethod);
-      }
+      }*/
     }
 
     // Apply sorting

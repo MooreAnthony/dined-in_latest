@@ -17,11 +17,22 @@ async function fetchBooking(bookingId: string): Promise<Booking> {
         public_name
       ),
       contact:contacts (
-        id,
-        first_name,
-        last_name,
-        email,
-        mobile
+          id,
+          first_name,
+          last_name,
+          email,
+          mobile,
+          birthday_month,
+          birthday_day,
+          street_address,
+          city,
+          state,
+          postal_code,
+          country,
+          email_consent,
+          contact_tags:contact_tags (
+             tag:tags (id, name)
+    )
       )
     `)
     .eq('id', bookingId)
@@ -124,13 +135,24 @@ async function fetchBookings(
           id,
           public_name
         ),
-        contact:contacts (
+              contact:contacts (
           id,
           first_name,
           last_name,
           email,
-          mobile
-        )
+          mobile,
+          birthday_month,
+          birthday_day,
+          street_address,
+          city,
+          state,
+          postal_code,
+          country,
+          email_consent,
+          contact_tags:contact_tags (
+             tag:tags (id, name)
+    )
+      )
       `, { count: 'exact' })
       .eq('company_id', companyId);
 

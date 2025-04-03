@@ -12,6 +12,7 @@ const bookingSchema = z.object({
   customer_name: z.string().min(1, 'Customer name is required'),
   customer_email: z.string().email('Invalid email address'),
   customer_phone: z.string().optional(),
+  customer_dob_month: z.string().nullable().optional(),
   booking_date: z.string().min(1, 'Booking date is required'),
   booking_time: z.string().min(1, 'Booking time is required'),
   guests: z.number().min(1, 'At least 1 guest is required'),
@@ -44,6 +45,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
       customer_name: booking.contact ? `${booking.contact.first_name} ${booking.contact.last_name}` : '',
       customer_email: booking.contact ? booking.contact.email : '',
       customer_phone: booking.contact ? booking.contact.mobile : '',
+      customer_dob_month: booking.contact?.birthday_month || undefined,
       booking_date: booking.booking_seated_date,
       booking_time: booking.booking_seated_time,
       guests: booking.covers_adult + booking.covers_child,
@@ -53,21 +55,37 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     } : undefined,
   });
 
-  const handleFormSubmit = async (data: CreateBookingData) => {
+  const handleFormSubmit = async (data: Booking) => {
     if (isEditing && booking) {
       // Format data for update
       const updateData: UpdateBookingData = {
-        booking_seated_date: data.booking_date,
-        booking_seated_time: data.booking_time,
+        ...booking, // Spread the existing booking data
+        location_id: booking.location_id || '',
+        booking_source: booking.booking_source,
+        booking_type: booking.booking_type,
+        duration: booking.duration ?? 0,
+        booking_status: booking.booking_status,
+        booking_seated_date: data.booking_seated_date,
+        booking_seated_time: data.booking_seated_time,
         covers_adult: data.guests,
         covers_child: 0,
-        special_requests: data.special_requests,
-        notes: data.notes,
-        table_id: data.table_id,
+        table_ids: [booking.table_id ?? ''],
       };
       await onSubmit(updateData);
     } else {
-      await onSubmit(data);
+      const createData: CreateBookingData = {
+        customer_name: data.contact ? `${data.contact.first_name} ${data.contact.last_name}` : '',
+        customer_email: data.contact ? data.contact.email : '',
+        customer_phone: data.contact ? data.contact.mobile : '',
+        customer_dob_month: data.contact?.birthday_month || '',
+        booking_date: data.booking_seated_date,
+        booking_time: data.booking_seated_time,
+        guests: data.covers_adult + data.covers_child,
+        special_requests: data.special_requests || '',
+        notes: data.notes || '',
+        table_id: data.table_id || undefined,
+      };
+      await onSubmit(createData);
     }
   };
 

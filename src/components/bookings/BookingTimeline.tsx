@@ -14,13 +14,8 @@ const SEGMENTS_PER_HOUR = 4; // 15-minute segments
 const SEGMENT_WIDTH = 60; // pixels
 const TIMELINE_HEIGHT = 120; // pixels
 
-const formatTime = (hour: number, segment: number) => {
-  const minutes = segment * 15;
-  return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-};
-
 const getBookingPosition = (booking: Booking) => {
-  const [hours, minutes] = booking.booking_time.split(':').map(Number);
+  const [hours, minutes] = booking.booking_seated_time.split(':').map(Number);
   const totalMinutes = (hours - 9) * 60 + minutes;
   return Math.floor(totalMinutes / 15) * SEGMENT_WIDTH;
 };
@@ -244,10 +239,10 @@ export const BookingTimeline: React.FC<BookingTimelineProps> = ({
                     top: `${(index % 3) * 33}%`,
                     height: '30%',
                   }}
-                  aria-label={`Booking for ${booking.customer_name} at ${booking.booking_time}`}
+                  aria-label={`Booking for ${booking.contact?.last_name} at ${booking.booking_seated_time}`}
                 >
                   <div className="text-sm font-medium text-white truncate">
-                    {booking.customer_name}
+                    {booking.contact?.last_name}
                   </div>
                   <div className="text-xs text-white/80 truncate">
                     {booking.guests} guests

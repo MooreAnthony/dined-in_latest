@@ -27,6 +27,16 @@ export interface Booking {
     last_name: string;
     email: string;
     mobile: string;
+    birthday_month: string | null;
+    birthday_day: string | null;
+    street_address: string | null;
+    city: string | null;
+    state: string | null;
+    postal_code: string | null;
+    country: string | null;
+    email_consent: boolean;
+    sms_consent: boolean;
+    notes: string | null;
   } | null;
   location: {
     id: string;
@@ -78,6 +88,7 @@ export interface CreateBookingData {
   customer_name: string;
   customer_email: string;
   customer_phone: string;
+  customer_dob_month: string;
   booking_date: string;
   booking_time: string;
   guests: number;
@@ -126,5 +137,4 @@ export interface UpdateBookingData extends Partial<CreateBookingData> {
     left_time: string | null;
     tags: string[] | null;
     table_ids: string[] | null;
-    
 }
