@@ -6,6 +6,15 @@ import { useCompany } from '../../contexts/CompanyContext';
 import { useLocations } from '../../hooks/useLocations';
 import { NoCompanySelected } from '../../components/dashboard/NoCompanySelected';
 
+interface LocationFormProps {
+  isEditing?: boolean;
+}
+
+export const LocationForm: React.FC<LocationFormProps> = ({ isEditing: _isEditing = false }) => {
+  return null; // Return null as a placeholder until you implement this component
+}
+
+
 export const Locations: React.FC = () => {
   const navigate = useNavigate();
   const { currentCompany } = useCompany();

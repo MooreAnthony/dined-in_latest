@@ -1,23 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
 import { Button } from '../../components/common/Button';
 import { useCompany } from '../../contexts/CompanyContext';
 import { useTags } from '../../hooks/useTags';
-import { findContactByEmailOrMobile } from '../../services/supabase/contacts';
-import { createTag } from '../../services/supabase/tags';
-import { createBookingWithContact, updateBooking, fetchBooking } from '../../services/supabase/bookings';
+import { fetchBooking } from '../../services/supabase/bookings';
 import { useLocations } from '../../hooks/useLocations';
-import { Tag } from '../../types/tags';
 import { ContactSearch } from '../../components/bookings/ContactSearch';
 import { ContactDetails } from '../../components/bookings/ContactDetails';
 import { ContactTagsSection } from '../../components/bookings/ContactTagsSection';
 import { BookingDetailsForm } from '../../components/bookings/BookingDetailsForm';
 import { FormActions } from '../../components/bookings/FormActions';
 import { useBookingForm } from '../../hooks/useBookingForm';
-import type { ContactFields } from '../../types/bookings';
 import type { Booking } from '../../types/bookings';
+
 
 export const CreateBooking: React.FC = () => {
   // All hooks must be called unconditionally at the top level
@@ -33,12 +30,9 @@ export const CreateBooking: React.FC = () => {
   const { locations, isLoading } = useLocations();
   const { tags: contactTags } = useTags(currentCompany?.id, 'contact'); 
   
-  const bookingData = location.state || {};
-  
   const {
     register,
     handleSubmit,
-    reset,
     watch,
     errors,
     isSubmitting,
@@ -51,24 +45,34 @@ export const CreateBooking: React.FC = () => {
     onSubmit,
   } = useBookingForm(bookingId, location.state);
 
+  // Track if fetchBooking has run
+  const hasFetched = useRef(false);
+
   // Load existing booking if editing
-  useEffect(() => {
-    const loadBooking = async () => {
-      if (bookingId && currentCompany) {
-        setIsLoadingBooking(true);
-        try {
-          const booking = await fetchBooking(bookingId);
-          setCurrentBooking(booking);
-        } catch (error) {
-          console.error('Failed to load booking:', error);
-          navigate('/dashboard/bookings');
-        } finally {
-          setIsLoadingBooking(false);
-        }
-      }
-    };
-    loadBooking();
-  }, [bookingId, currentCompany, navigate]);
+useEffect(() => {
+  if (hasFetched.current) return; // Prevent multiple calls
+  if (!bookingId || !currentCompany) return; // Ensure conditions are met
+
+  console.log('Fetching booking:', { bookingId, currentCompany });
+
+  const loadBooking = async () => {
+    setIsLoadingBooking(true);
+    try {
+      const booking = await fetchBooking(bookingId);
+      setCurrentBooking(booking);
+      hasFetched.current = true; // Mark as fetched
+    } catch (error) {
+      console.error('Failed to load booking:', error);
+      navigate('/dashboard/bookings');
+    } finally {
+      setIsLoadingBooking(false);
+    }
+  };
+
+  loadBooking();
+}, [bookingId, currentCompany, navigate]); // Keep dependencies minimal
+
+  
 
   // Get selected venue group from form
   const selectedVenueGroup = watch('venue_group_id');

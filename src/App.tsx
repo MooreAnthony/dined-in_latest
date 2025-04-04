@@ -135,7 +135,7 @@ const App: React.FC = () => {
               <Route path="settings/api-users" element={<ApiUsers />} />
               <Route path="settings/locations" element={<Locations />} />
               <Route path="settings/locations/new" element={<LocationForm />} />
-              <Route path="settings/locations/:id/edit" element={<LocationForm isEditing />} />
+              <Route path="settings/locations/:id/edit" element={<LocationForm isEditing={true} />} />
               <Route path="settings/users" element={<div>Users Settings</div>} />
               <Route path="settings/integrations" element={<div>Integrations Settings</div>} />
             </Route>

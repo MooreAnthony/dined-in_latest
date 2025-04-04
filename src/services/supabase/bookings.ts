@@ -1,8 +1,8 @@
 import { supabase } from './config';
 import type { 
   Booking, 
-  CreateBookingData, 
-  UpdateBookingData,
+  CreateBooking, 
+  UpdateBooking,
   BookingFilters,
   Table 
 } from '../../types/bookings';
@@ -100,7 +100,7 @@ async function createBookingWithContact(
     p_covers_child: data.covers_child,
     p_duration: data.duration,
     p_special_requests: data.special_requests,
-    p_notes: data.notes
+    p_notes: data.notes,
   });
 
   if (error) throw error;
@@ -207,7 +207,7 @@ async function fetchBookings(
 
 async function updateBooking(
   bookingId: string,
-  updates: UpdateBookingData
+  updates: UpdateBooking
 ): Promise<Booking> {  
   if (!bookingId) {
     throw new Error('Booking ID is required for update');
@@ -243,7 +243,7 @@ async function updateBooking(
 
 async function createBooking(
   companyId: string,
-  bookingData: CreateBookingData
+  bookingData: CreateBooking
 ): Promise<Booking> {
   const { data: booking, error } = await supabase
     .from('bookings')

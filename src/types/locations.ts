@@ -52,3 +52,4 @@ export type CreateLocationData = Omit<
 >;
 
 export type UpdateLocationData = Partial<CreateLocationData>;
+

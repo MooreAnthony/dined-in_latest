@@ -8,56 +8,81 @@ export interface Table {
   created_at: string;
 }
 
-interface BaseBookingData {
-  table_id?: string;
+export interface CreateBooking {
+  booking_reference: string;
+  booking_seated_date: string;
+  booking_seated_time: string;
+  booking_source: string;
+  booking_status: string;
+  booking_type: string;
+  company_id?: string | null;
+  contact_id?: string | null;
+  location_id?: string | null;
+  location_group_id?: string | null;
+  table_ids?: string[] | null;
+  tags?: string[] | null;
+  covers_adult?: number;
+  covers_child?: number;
+  guests: number;
+  special_requests?: string | null;
+  notes?: string | null;
+  arrived_guests?: number | null;
+  duration?: number | null;
+  datetime_of_slot: string;
+  time_slot_iso: string;
+  deposit_required?: boolean | null;
+  deposit_amount_required?: number | null;
+  deposit_paid?: number | null;
+  outstanding_balance?: number | null;
+  total_payment?: number | null;
+  total_net_payment?: number | null;
+  total_gross_payment?: number | null;
+  pos_tickets?: POS_Ticket[] | null;
+  seated_time?: string | null;
+  left_time?: string | null;
+  created?: string | null;
+  updated?: string | null;
+  deleted?: string | null;
+}
+
+
+export interface UpdateBooking {
+  id?: string;
+  booking_reference?: string;
   booking_seated_date?: string;
   booking_seated_time?: string;
-  location_id: string;
-  booking_source: string;
-  booking_type: string;
-  booking_status: BookingStatus;
-  booking_occasion?: string;
-  covers_adult: number;
+  booking_source?: string;
+  booking_status?: string;
+  booking_type?: string;
+  company_id?: string | null;
+  contact_id?: string | null;
+  location_id?: string | null;
+  location_group_id?: string | null;
+  table_ids?: string[] | null;
+  tags?: string[] | null;
+  covers_adult?: number;
   covers_child?: number;
-  duration: number;
-  guests: number;
-  special_requests?: string;
-  notes?: string;
+  guests?: number;
+  special_requests?: string | null;
+  notes?: string | null;
+  arrived_guests?: number | null;
+  duration?: number | null;
+  datetime_of_slot?: string;
+  time_slot_iso?: string;
+  deposit_required?: boolean | null;
+  deposit_amount_required?: number | null;
+  deposit_paid?: number | null;
+  outstanding_balance?: number | null;
+  total_payment?: number | null;
+  total_net_payment?: number | null;
+  total_gross_payment?: number | null;
+  pos_tickets?: POS_Ticket[] | null;
+  seated_time?: string | null;
+  left_time?: string | null;
+  created?: string | null;
+  updated?: string | null;
+  deleted?: string | null;
 }
-
-export interface CreateBookingData extends BaseBookingData {
-  customer_name: string;
-  customer_email: string;
-  customer_phone: string;
-  customer_dob_month: string;
-  customer_dob_day: string;
-  customer_address1: string;
-  customer_postcode: string;
-  customer_city: string;
-  customer_state: string;
-  customer_country: string;
-  booking_date: string;
-  booking_time: string;
-  contact: Contact | null;
-  location: Location | null;
-}
-
-export interface UpdateBookingData extends Partial<BaseBookingData> {
-  status?: BookingStatus;
-  arrived_guests: number | null;
-  deposit_required: boolean;
-  deposit_amount_required: number | null;
-  deposit_paid: number;
-  total_payment: number;
-  total_net_payment: number;
-  total_gross_payment: number;
-  pos_tickets: POS_Ticket[] | null;
-  seated_time: string | null;
-  left_time: string | null;
-  tags: string[] | null;
-  table_ids: string[] | null;
-}
-
 
 
 export type BookingStatus = 'New' | 'Pending' | 'Enquiry' | 'No Show' | 'Arrived' | 'Complete' | 'Cancelled';
@@ -74,34 +99,37 @@ export interface BookingFilters {
   maxGuests?: number;
 }
 
-interface Contact {
+export interface Contact {
   id: string;
   first_name: string;
   last_name: string;
   email: string;
   mobile: string;
-  birthday_month: string | null;
-  birthday_day: string | null;
-  street_address: string | null;
-  city: string | null;
-  state: string | null;
-  postal_code: string | null;
-  country: string | null;
+  birthday_month?: string | null;
+  birthday_day?: string | null;
+  street_address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal_code?: string | null;
+  country?: string | null;
   email_consent: boolean;
   sms_consent: boolean;
-  notes: string | null;
+  notes?: string | null;
 }
 
-interface Location {
+
+export interface Location {
   id: string;
   public_name: string;
 }
 
-interface POS_Ticket {
+
+export interface POS_Ticket {
   ticket_id: string;
   amount: number;
   timestamp: string;
 }
+
 
 export interface ContactFields {
   first_name: boolean;
@@ -117,48 +145,43 @@ export interface ContactFields {
   tags: boolean;
 }
 
-
-interface BaseBooking {
+export interface Booking {
   id: string;
-  company_id: string;
-  table_id: string | null;
   booking_reference: string;
-  location_id: string | null;
-  location_group_id: string | null;
-  contact_id: string | null;
-  external_reference: string | null;
-  booking_source: 'In house' | 'Online' | 'Phone' | 'Internal';
-  booking_type: 'Table' | 'Function';
-  booking_occasion: string | null;
   booking_seated_date: string;
   booking_seated_time: string;
+  booking_source: string;
+  booking_status: string;
+  booking_type: string;
+  booking_occasion?: string | null;
+  company_id?: string | null;
+  contact_id?: string | null;
+  location_id?: string | null;
+  location_group_id?: string | null;
+  table_ids?: string[] | null;
+  tags?: string[] | null;
+  covers_adult: number;
+  covers_child?: number;
+  guests: number;
+  special_requests?: string | null;
+  notes?: string | null;
+  arrived_guests?: number | null;
+  duration?: number | null;
   datetime_of_slot: string;
   time_slot_iso: string;
-  booking_status: BookingStatus;
-  covers_adult: number;
-  covers_child: number;
-  arrived_guests: number | null;
-  deposit_required: boolean;
-  deposit_amount_required: number | null;
-  deposit_paid: number;
-  total_payment: number;
-  total_net_payment: number;
-  total_gross_payment: number;
-  duration: number | null;
-  tags: string[] | null;
-  pos_tickets: POS_Ticket[] | null;
-  seated_time: string | null;
-  left_time: string | null;
-  guests: number;
-  special_requests: string | null;
-  notes: string | null;
-  created_at: string;
-  modified_at: string;
-  created_by: string | null;
-  modified_by: string | null;
-}
-
-export interface Booking extends BaseBooking {
-  contact: Contact | null;
-  location: Location | null;
+  deposit_required?: boolean | null;
+  deposit_amount_required?: number | null;
+  deposit_paid?: number | null;
+  outstanding_balance?: number | null;
+  total_payment?: number | null;
+  total_net_payment?: number | null;
+  total_gross_payment?: number | null;
+  pos_tickets?: POS_Ticket[] | null;
+  seated_time?: string | null;
+  left_time?: string | null;
+  created?: string | null;
+  updated?: string | null;
+  deleted?: string | null;
+  contact: Contact;
+  location: Location;
 }
