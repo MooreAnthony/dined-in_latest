@@ -1,11 +1,12 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { User, Calendar, Users } from 'lucide-react';
 import { FormField } from '../common/FormField'; 
 import { Button } from '../common/Button';
 import type { Table, Booking, CreateBookingData, UpdateBookingData } from '../../types/bookings';
+import { useForm } from 'react-hook-form';
 
 const bookingSchema = z.object({
   table_id: z.string().optional(),
@@ -13,6 +14,11 @@ const bookingSchema = z.object({
   customer_email: z.string().email('Invalid email address'),
   customer_phone: z.string().optional(),
   customer_dob_month: z.string().nullable().optional(),
+  customer_dob_day: z.string().nullable().optional(),
+  customer_address1: z.string().optional(),
+  customer_postcode: z.string().optional(),
+  customer_city: z.string().optional(),
+  customer_state: z.string().optional(),
   booking_date: z.string().min(1, 'Booking date is required'),
   booking_time: z.string().min(1, 'Booking time is required'),
   guests: z.number().min(1, 'At least 1 guest is required'),
@@ -39,23 +45,37 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset, 
   } = useForm<CreateBookingData>({
     resolver: zodResolver(bookingSchema),
-    defaultValues: isEditing && booking ? {
-      customer_name: booking.contact ? `${booking.contact.first_name} ${booking.contact.last_name}` : '',
-      customer_email: booking.contact ? booking.contact.email : '',
-      customer_phone: booking.contact ? booking.contact.mobile : '',
-      customer_dob_month: booking.contact?.birthday_month || undefined,
-      booking_date: booking.booking_seated_date,
-      booking_time: booking.booking_seated_time,
-      guests: booking.covers_adult + booking.covers_child,
-      special_requests: booking.special_requests || '',
-      notes: booking.notes || '',
-      table_id: booking.table_id || undefined,
-    } : undefined,
+    defaultValues: {} // <-- Empty to avoid stale values
   });
+  
+  // Reset form values when `booking` changes
+  useEffect(() => {
+    if (isEditing && booking) {
+      reset({
+        customer_name: booking.contact ? `${booking.contact.first_name} ${booking.contact.last_name}` : '',
+        customer_email: booking.contact?.email || '',
+        customer_phone: booking.contact?.mobile || '',
+        customer_dob_month: booking.contact?.birthday_month || '',
+        customer_dob_day: booking.contact?.birthday_day || undefined,
+        customer_address1: booking.contact?.street_address || '',
+        customer_postcode: booking.contact?.postal_code || '',
+        customer_city: booking.contact?.city || '',
+        customer_state: booking.contact?.state || '',
+        booking_date: booking.booking_seated_date,
+        booking_time: booking.booking_seated_time,
+        guests: booking.covers_adult + booking.covers_child,
+        special_requests: booking.special_requests || 'no special requests',
+        notes: booking.notes || '',
+        table_id: booking.table_id || undefined,
+      });
+    }
+  }, [booking, isEditing, reset]); // <-- Runs when `booking` changes
+  
 
-  const handleFormSubmit = async (data: Booking) => {
+  const handleFormSubmit = async (data: CreateBookingData) => {
     if (isEditing && booking) {
       // Format data for update
       const updateData: UpdateBookingData = {
@@ -65,27 +85,44 @@ export const BookingForm: React.FC<BookingFormProps> = ({
         booking_type: booking.booking_type,
         duration: booking.duration ?? 0,
         booking_status: booking.booking_status,
-        booking_seated_date: data.booking_seated_date,
+        booking_occasion: booking.booking_occasion ?? 'Birthday',
+        booking_seated_date: data.booking_seated_date || '',
         booking_seated_time: data.booking_seated_time,
         covers_adult: data.guests,
         covers_child: 0,
         table_ids: [booking.table_id ?? ''],
+        table_id: booking.table_id ?? '',
+        special_requests: booking.special_requests ?? '',
+        notes: booking.notes ?? 'no notes',
       };
       await onSubmit(updateData);
     } else {
-      const createData: CreateBookingData = {
-        customer_name: data.contact ? `${data.contact.first_name} ${data.contact.last_name}` : '',
-        customer_email: data.contact ? data.contact.email : '',
-        customer_phone: data.contact ? data.contact.mobile : '',
-        customer_dob_month: data.contact?.birthday_month || '',
-        booking_date: data.booking_seated_date,
-        booking_time: data.booking_seated_time,
-        guests: data.covers_adult + data.covers_child,
-        special_requests: data.special_requests || '',
-        notes: data.notes || '',
-        table_id: data.table_id || undefined,
-      };
-      await onSubmit(createData);
+        const createData: CreateBookingData = {
+          customer_name: data.contact ? `${data.contact.first_name} ${data.contact.last_name}` : '',
+          customer_email: data.contact ? data.contact.email : '',
+          customer_phone: data.contact ? data.contact.mobile : '',
+          customer_dob_month: data.contact?.birthday_month || '',
+          customer_dob_day: data.contact?.birthday_day || '',
+          customer_address1: data.contact?.street_address || '',
+          customer_postcode: data.contact?.postal_code || '',
+          customer_country: data.contact?.country || '',
+          booking_occasion: booking?.booking_occasion ?? 'Birthday',
+          customer_city: data.contact?.city || '',
+          customer_state: data.contact?.state || '',
+          booking_seated_date: data.booking_seated_date,
+          booking_seated_time: data.booking_seated_time,
+          covers_adult: data.covers_adult,
+          covers_child: data.covers_child,
+          special_requests: data.special_requests || 'no special requests',
+          notes: data.notes || 'no notes',
+          table_id: data.table_id || undefined,
+          location_id: booking?.location_id || '',
+          booking_source: booking?.booking_source || '',
+          booking_type: booking?.booking_type || '',
+          booking_status: booking?.booking_status || 'New',
+          duration: booking?.duration ?? 60,
+        };
+        await onSubmit(createData);
     }
   };
 
@@ -245,3 +282,4 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     </form>
   );
 };
+

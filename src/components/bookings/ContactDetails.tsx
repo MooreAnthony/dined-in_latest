@@ -1,5 +1,4 @@
 import React from 'react';
-import { User } from 'lucide-react';
 import { FormField } from '../common/FormField';
 import { COUNTRIES } from '../../utils/constants';
 import type { ContactFields } from '../../types/bookings';

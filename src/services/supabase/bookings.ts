@@ -256,20 +256,6 @@ async function createBooking(
     .single();
 
   if (error) throw error;
-  
-  // Send confirmation email
-  // this can be removed
-  try {
-    await supabase.functions.invoke('send-booking-email', {
-      body: {
-        bookingId: booking.id,
-        templateCode: 'booking_confirmation'
-      }
-    });
-  } catch (emailError) {
-    console.error('Failed to send confirmation email:', emailError);
-  }
-
   return booking;
 }
 

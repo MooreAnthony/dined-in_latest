@@ -30,16 +30,15 @@ export async function findContactByEmailOrMobile(
     .select(`
       *,
       tags:contact_tags(
-        tag:tags(id, name, colour, icon)
+        tag:tags(id, name, color, icon)
       )
     `)
     .eq('company_id', companyId);
 
-  if (email) {
-    query.eq('email', email);
-  } else if (mobile) {
-    query.eq('mobile', mobile);
-  }
+    if (email || mobile) {
+      query.or(`email.eq.${email},mobile.eq.${mobile}`);
+    }
+    
 
   const { data, error } = await query.single();
 
@@ -63,7 +62,7 @@ export async function fetchContacts({
     const offset = (page - 1) * pageSize;
 
     // Build query
-    let query = supabase
+    const query = supabase
     .from('contacts')
     .select(`
       *,
@@ -75,34 +74,13 @@ export async function fetchContacts({
     .range(offset, offset + pageSize - 1);
 
     // Apply filters
-    if (filters) {
-      if (filters.search) {
-        query = query.or(
-          `first_name.ilike.%${filters.search}%,` +
-          `last_name.ilike.%${filters.search}%,` +
-          `email.ilike.%${filters.search}%`
-        );
-      }
-    /*  if (filters.isActive !== undefined) {
-        query = query.eq('is_active', filters.isActive);
-      }
-      if (filters.source) {
-        query = query.eq('contact_source', filters.source);
-      }
-      if (filters.contactMethod) {
-        query = query.eq('preferred_contact_method', filters.contactMethod);
-      }*/
+    if (filters?.search) {
+      query.or(`first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
     }
-
+    
     // Apply sorting
-    if (sort) {
-      query = query.order(sort.field, {
-        ascending: sort.direction === 'asc',
-      });
-    } else {
-      // Default sorting
-      query = query.order('created_at', { ascending: false });
-    }
+    query.order(sort?.field || 'created_at', { ascending: sort?.direction === 'asc' || false });
+
 
     const { data, error, count } = await query;
 
@@ -110,24 +88,14 @@ export async function fetchContacts({
       throw error;
     }
 
-    interface ContactWithTags {
-      [key: string]: unknown;
-      tags?: { tag: {
-        id: string;
-        name: string;
-        color: string;
-        icon: string;
-      } }[];
+    interface ContactWithTags extends Omit<Contact, 'tags'> {
+      tags?: { tag: { id: string; name: string; color: string; icon: string } }[];
+    }
+    
+    interface TransformedContact extends Omit<Contact, 'tags'> {
+      tags: { id: string; name: string; color: string; icon: string }[];
     }
 
-    interface TransformedContact extends Omit<Contact, 'tags'> {
-      tags: {
-        id: string;
-        name: string;
-        color: string;
-        icon: string;
-      }[];
-    }
 
     return {
       data: (data as ContactWithTags[]).map(contact => ({
@@ -160,8 +128,11 @@ export async function createContact(companyId: string, data: Partial<Contact>): 
     .select()
     .single();
 
-  if (error) throw error;
-  return contact;
+    if (error) {
+      throw error;
+    }
+    return contact;
+    
 }
 
 export async function updateContact(contactId: string, data: Partial<Contact>): Promise<Contact> {
@@ -179,7 +150,7 @@ export async function updateContact(contactId: string, data: Partial<Contact>): 
 export async function deleteContact(contactId: string): Promise<void> {
   const { error } = await supabase
     .from('contacts')
-    .delete()
+    .update({ is_deleted: true })
     .eq('id', contactId);
 
   if (error) throw error;
