@@ -14,22 +14,21 @@ import { BookingDetailsForm } from '../../components/bookings/BookingDetailsForm
 import { FormActions } from '../../components/bookings/FormActions';
 import { useBookingForm } from '../../hooks/useBookingForm';
 import type { Booking } from '../../types/bookings';
-
+import { MessageBox } from '../../components/common/MessageBox';
 
 export const CreateBooking: React.FC = () => {
-  // All hooks must be called unconditionally at the top level
   const navigate = useNavigate();
   const location = useLocation();
   const { id: bookingId } = useParams();
   const [isLoadingBooking, setIsLoadingBooking] = useState(!!bookingId);
   const { currentCompany } = useCompany();
   const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
-  const [venueGroups] = useState<{ id: string; name: string }[]>([]);
-  
-  // These hooks depend on currentCompany which might be null initially
+  //const [venueGroups] = useState<{ id: string; name: string }[]>([]);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false); // State for MessageBox
+
   const { locations, isLoading } = useLocations();
-  const { tags: contactTags } = useTags(currentCompany?.id, 'contact'); 
-  
+  const { tags: contactTags } = useTags(currentCompany?.id, 'contact');
+
   const {
     register,
     handleSubmit,
@@ -45,39 +44,31 @@ export const CreateBooking: React.FC = () => {
     onSubmit,
   } = useBookingForm(bookingId, location.state);
 
-  // Track if fetchBooking has run
   const hasFetched = useRef(false);
 
-  // Load existing booking if editing
-useEffect(() => {
-  if (hasFetched.current) return; // Prevent multiple calls
-  if (!bookingId || !currentCompany) return; // Ensure conditions are met
+  useEffect(() => {
+    if (hasFetched.current) return;
+    if (!bookingId || !currentCompany) return;
 
-  console.log('Fetching booking:', { bookingId, currentCompany });
+    const loadBooking = async () => {
+      setIsLoadingBooking(true);
+      try {
+        const booking = await fetchBooking(bookingId);
+        setCurrentBooking(booking);
+        hasFetched.current = true;
+      } catch (error) {
+        console.error('Failed to load booking:', error);
+        navigate('/dashboard/bookings');
+      } finally {
+        setIsLoadingBooking(false);
+      }
+    };
 
-  const loadBooking = async () => {
-    setIsLoadingBooking(true);
-    try {
-      const booking = await fetchBooking(bookingId);
-      setCurrentBooking(booking);
-      hasFetched.current = true; // Mark as fetched
-    } catch (error) {
-      console.error('Failed to load booking:', error);
-      navigate('/dashboard/bookings');
-    } finally {
-      setIsLoadingBooking(false);
-    }
-  };
+    loadBooking();
+  }, [bookingId, currentCompany, navigate]);
 
-  loadBooking();
-}, [bookingId, currentCompany, navigate]); // Keep dependencies minimal
-
-  
-
-  // Get selected venue group from form
   const selectedVenueGroup = watch('venue_group_id');
 
-  // Loading state
   if (isLoading || isLoadingBooking) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -93,7 +84,6 @@ useEffect(() => {
     );
   }
 
-  // No company selected state
   if (!currentCompany) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -119,13 +109,7 @@ useEffect(() => {
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
-            onClick={() => {
-              if (bookingId && window.confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-                navigate('/dashboard/bookings');
-              } else if (!bookingId) {
-                navigate('/dashboard/bookings');
-              }
-            }}
+            onClick={() => setShowCancelConfirm(true)} // Show MessageBox on cancel
             className="p-2"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -133,8 +117,7 @@ useEffect(() => {
           <h1 className="text-3xl font-bold text-dark-text-primary">
             {bookingId
               ? `Edit Booking ${currentBooking?.booking_reference ? `- ${currentBooking.booking_reference}` : ''}`
-              : 'New Booking'
-            }
+              : 'New Booking'}
           </h1>
         </div>
       </div>
@@ -158,14 +141,14 @@ useEffect(() => {
             errors={errors}
             isSearching={isSearching}
           />
-          
+
           <ContactDetails
             showFields={showFields}
             register={register}
             errors={errors}
             isSearching={isSearching}
           />
-          
+
           <ContactTagsSection
             show={showFields.tags}
             tags={contactTags}
@@ -180,17 +163,30 @@ useEffect(() => {
           register={register}
           errors={errors}
           locations={locations}
-          venueGroups={venueGroups}
+         // venueGroups={venueGroups}
           selectedVenueGroup={selectedVenueGroup}
         />
 
         {/* Form Actions */}
         <FormActions
-          onCancel={() => navigate('/dashboard/bookings')}
+          onCancel={() => setShowCancelConfirm(true)} // Show MessageBox on cancel
           isSubmitting={isSubmitting}
           isEditing={!!bookingId}
         />
       </form>
+
+      {/* MessageBox for Cancel Confirmation */}
+      {showCancelConfirm && (
+        <MessageBox
+          title="Cancel Booking"
+          message="Are you sure you want to cancel? Any unsaved changes will be lost."
+          onConfirm={() => {
+            setShowCancelConfirm(false);
+            navigate('/dashboard/bookings');
+          }}
+          onCancel={() => setShowCancelConfirm(false)}
+        />
+      )}
     </div>
   );
 };

@@ -53,3 +53,8 @@ export type CreateLocationData = Omit<
 
 export type UpdateLocationData = Partial<CreateLocationData>;
 
+export interface VenueGroup {
+  id: string;
+  name: string;
+  // Add other properties as needed
+}

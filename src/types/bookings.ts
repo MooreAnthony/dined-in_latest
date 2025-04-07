@@ -115,6 +115,7 @@ export interface Contact {
   email_consent: boolean;
   sms_consent: boolean;
   notes?: string | null;
+  contact_tags?: string[] | null;
 }
 
 

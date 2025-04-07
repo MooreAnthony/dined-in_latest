@@ -5,14 +5,12 @@ import { useCompany } from '../../contexts/CompanyContext';
 import { useLocations } from '../../hooks/useLocations';
 import { useBookings } from '../../hooks/useBookings';
 import { Button } from '../../components/common/Button';
-import { BookingForm } from '../../components/bookings/BookingForm';
 import { BookingsTable } from '../../components/bookings/BookingsTable';
 import { BookingsFilters } from '../../components/bookings/BookingsFilters';
-import type { BookingFilters, Booking } from '../../types/bookings';
+import type { BookingFilters } from '../../types/bookings';
 
 export const Bookings: React.FC = () => {
   const { currentCompany } = useCompany();
-  const [showForm, setShowForm] = useState(false);
   const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,14 +18,11 @@ export const Bookings: React.FC = () => {
 
   const {
     bookings,
-    tables,
     totalCount,
     currentPage,
     filters,
     isLoading,
     error,
-    createBooking,
-    updateBooking,
     deleteBooking,
     onPageChange,
     onFilterChange,
@@ -45,10 +40,6 @@ export const Bookings: React.FC = () => {
 
   const handleFilter = (filters: Partial<BookingFilters>) => {
     onFilterChange(filters);
-  };
-
-  const handleBookingSelect = (booking: Booking) => {
-    navigate(`/dashboard/bookings/${booking.id}`);
   };
 
   if (!currentCompany) {
@@ -81,19 +72,6 @@ export const Bookings: React.FC = () => {
         </Button>
       </div>
 
-      {/* Booking Form */}
-      {showForm && (
-        <div className="bg-dark-secondary rounded-lg border border-dark-border p-6">
-          <BookingForm
-            tables={tables}
-            onSubmit={async (data) => {
-              await createBooking(data);
-              setShowForm(false);
-            }}
-            onCancel={() => setShowForm(false)}
-          />
-        </div>
-      )}
 
       {/* Search and Filters */}
       <div className="space-y-4">
@@ -147,8 +125,6 @@ export const Bookings: React.FC = () => {
           sortDirection={sortDirection}
           onPageChange={onPageChange}
           onSort={onSort}
-          onSelect={handleBookingSelect}
-          onUpdate={updateBooking}
           onDelete={deleteBooking}
         />
       )}

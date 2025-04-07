@@ -1,13 +1,28 @@
 import React from 'react';
 import { Building2 } from 'lucide-react';
 import { FormField } from '../common/FormField';
-import type { Location } from '../../types/locations';
+import type { Location, VenueGroup } from '../../types/locations';
+import { UseFormRegister, FieldErrors } from 'react-hook-form';
+
+interface BookingFormValues {
+  venue_group_id: string;
+  location_id: string;
+  booking_source: string;
+  booking_type: string;
+  booking_seated_date: string;
+  booking_seated_time: string;
+  covers_adult: number;
+  covers_child: number;
+  duration: number;
+  special_requests: string;
+  notes: string;
+}
 
 interface BookingDetailsFormProps {
-  register: any; // TODO: Add proper type from react-hook-form
-  errors: any; // TODO: Add proper type from react-hook-form
+  register: UseFormRegister<BookingFormValues>;
+  errors: FieldErrors<BookingFormValues>;
   locations: Location[];
-  venueGroups: { id: string; name: string }[];
+  venueGroups: VenueGroup[];
   selectedVenueGroup: string | undefined;
 }
 
@@ -73,7 +88,7 @@ export const BookingDetailsForm: React.FC<BookingDetailsFormProps> = ({
             ))}
           </select>
           {errors.location_id && (
-            <p className="text-sm text-red-400">{errors.location_id.message}</p>
+            <p className="text-sm text-red-400">{errors.location_id.message?.toString()}</p>
           )}
         </div>
       </div>
@@ -114,15 +129,20 @@ export const BookingDetailsForm: React.FC<BookingDetailsFormProps> = ({
         <FormField
           label="Date"
           type="date"
+          defaultValue={new Date().toISOString().split('T')[0]}
           min={new Date().toISOString().split('T')[0]}
           {...register('booking_seated_date')}
-          error={errors.booking_seated_date?.message}
+          error={errors.booking_seated_date?.message?.toString()}
         />
         <FormField
           label="Time"
           type="time"
+          defaultValue={new Date().toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
           {...register('booking_seated_time')}
-          error={errors.booking_seated_time?.message}
+          error={errors.booking_seated_time?.message?.toString()}
         />
       </div>
 
@@ -131,15 +151,16 @@ export const BookingDetailsForm: React.FC<BookingDetailsFormProps> = ({
           label="Adult Guests"
           type="number"
           min={1}
+          defaultValue={2}
           {...register('covers_adult', { valueAsNumber: true })}
-          error={errors.covers_adult?.message}
+          error={errors.covers_adult?.message?.toString()}
         />
         <FormField
           label="Child Guests"
           type="number"
           min={0}
           {...register('covers_child', { valueAsNumber: true })}
-          error={errors.covers_child?.message}
+          error={errors.covers_child?.message?.toString()}
         />
         <FormField
           label="Duration (minutes)"
@@ -147,7 +168,7 @@ export const BookingDetailsForm: React.FC<BookingDetailsFormProps> = ({
           min={30}
           step={15}
           {...register('duration', { valueAsNumber: true })}
-          error={errors.duration?.message}
+          error={errors.duration?.message?.toString()}
         />
       </div>
 

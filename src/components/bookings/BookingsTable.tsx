@@ -7,7 +7,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Button } from '../common/Button';
-import type { Booking, BookingStatus, UpdateBookingData } from '../../types/bookings';
+import type { Booking, BookingStatus } from '../../types/bookings';
 
 interface BookingsTableProps {
   bookings: Booking[];
@@ -18,9 +18,7 @@ interface BookingsTableProps {
   sortDirection: 'asc' | 'desc';
   onPageChange: (page: number) => void;
   onSort: (field: keyof Booking) => void;
-  onUpdate: (id: string, data: UpdateBookingData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
-  onSelect?: (booking: Booking) => void;
 }
 
 const getStatusColor = (status: BookingStatus) => {
@@ -184,11 +182,14 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
               </tr>
             ) : (
               bookings.map((booking) => (
-                <tr
-                  key={booking.id}
-                  className="hover:bg-dark-primary/50 transition-colors cursor-pointer"
-                  onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}
-                >
+                  <tr
+                    key={booking.id}
+                    className="hover:bg-dark-primary/50 transition-colors cursor-pointer"
+                    onClick={() => {
+                    //  console.log('Selected booking:', booking);
+                      navigate(`/dashboard/bookings/${booking.id}`);
+                    }}
+                  >
                   <td className="px-6 py-4 text-dark-text-primary">
                     {booking.location?.public_name || '-'}
                   </td>
@@ -204,7 +205,7 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
                   <td className="px-6 py-4">
                     <div className="space-y-1">
                       <div className="text-sm text-dark-text-secondary">
-                        {booking.contact?.email || '-'}
+                      {booking.contact?.email || '-'}
                       </div>
                       <div className="text-dark-text-primary">
                         {booking.contact 
@@ -220,7 +221,7 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
                   <td className="px-6 py-4 text-dark-text-primary">
                     <div className="space-y-1">
                       <div className="text-dark-text-primary">
-                        {booking.covers_adult + booking.covers_child} total
+                        {booking.covers_adult + (booking.covers_child || 0)} total
                       </div>
                       <div className="text-sm text-dark-text-secondary">
                         Adults: {booking.covers_adult} / Children: {booking.covers_child}
@@ -237,7 +238,7 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
                     <span
                       className={`
                         px-2 py-1 rounded-full text-xs font-medium
-                        ${getStatusColor(booking.booking_status)}
+                        ${getStatusColor(booking.booking_status as BookingStatus)}
                       `}
                     >
                       {booking.booking_status}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../contexts/CompanyContext';
 import { findContactByEmailOrMobile } from '../services/supabase/contacts';
 import { createBookingWithContact, updateBooking, fetchBooking } from '../services/supabase/bookings';
@@ -68,17 +68,27 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
               setValue('last_name', booking.contact.last_name);
               setValue('email', booking.contact.email);
               setValue('mobile', booking.contact.mobile);
+              setValue('birthday_month', booking.contact.birthday_month ? Number(booking.contact.birthday_month) : undefined);
+              setValue('birthday_day', booking.contact.birthday_day ? Number(booking.contact.birthday_day) : undefined);
+              setValue('street_address', booking.contact.street_address || '');
+              setValue('city', booking.contact.city || '');
+              setValue('state', booking.contact.state || '');
+              setValue('postal_code', booking.contact.postal_code || '');
+              setValue('country', booking.contact.country || '');
+              setValue('email_consent', booking.contact.email_consent || false);
+              setValue('sms_consent', booking.contact.sms_consent || false);
+              setSelectedContactTags(booking.contact.contact_tags ?? []);
             }
             
             // Booking details
             setValue('booking_seated_date', booking.booking_seated_date);
             setValue('booking_seated_time', booking.booking_seated_time);
             setValue('location_id', booking.location_id || '');
-            setValue('booking_source', booking.booking_source);
-            setValue('booking_type', booking.booking_type);
+            setValue('booking_source', booking.booking_source as 'In house' | 'Online' | 'Phone' | 'Internal');
+            setValue('booking_type', booking.booking_type as 'Table' | 'Function');
             setValue('booking_occasion', booking.booking_occasion || '');
             setValue('covers_adult', booking.covers_adult);
-            setValue('covers_child', booking.covers_child);
+            setValue('covers_child', booking.covers_child ?? 0);
             setValue('duration', booking.duration || 90);
             setValue('special_requests', booking.special_requests || '');
             setValue('notes', booking.notes || '');
@@ -198,7 +208,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
           location_id: data.location_id,
           booking_source: data.booking_source,
           booking_type: data.booking_type,
-          booking_occasion: data.booking_occasion,
+         // booking_occasion: data.booking_occasion,
           booking_seated_date: data.booking_seated_date,
           booking_seated_time: data.booking_seated_time,
           covers_adult: data.covers_adult,
