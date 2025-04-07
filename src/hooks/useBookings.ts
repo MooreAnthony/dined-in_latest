@@ -10,8 +10,8 @@ import {
 import type { 
   Booking, 
   BookingFilters, 
-  CreateBookingData,
-  UpdateBookingData,
+  CreateBooking,
+  UpdateBooking,
   Table 
 } from '../types/bookings';
 
@@ -26,8 +26,8 @@ export function useBookings({ companyId, initialFilters = {} }: UseBookingsOptio
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<BookingFilters>(initialFilters);
-  const [sortBy, setSortBy] = useState<keyof Booking>('booking_seated_date');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<keyof Booking>('created');
+  const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,12 +85,12 @@ export function useBookings({ companyId, initialFilters = {} }: UseBookingsOptio
     };
   }, [companyId, loadBookings]);
 
-  const handleCreateBooking = async (data: CreateBookingData) => {
+  const handleCreateBooking = async (data: CreateBooking) => {
       await createBooking(companyId, data);
       loadBookings();
   };
 
-  const handleUpdateBooking = async (bookingId: string, updates: UpdateBookingData) => {
+  const handleUpdateBooking = async (bookingId: string, updates: UpdateBooking) => {
 
       await updateBooking(bookingId, updates);
       loadBookings();

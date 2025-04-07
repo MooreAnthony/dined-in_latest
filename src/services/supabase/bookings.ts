@@ -123,8 +123,8 @@ async function fetchBookings(
   companyId: string,
   page: number = 1,
   filters: BookingFilters = {},
-  sortBy: keyof Booking = 'booking_seated_date',
-  sortDirection: 'asc' | 'desc' = 'asc'
+  sortBy: keyof Booking = 'created',
+  sortDirection: 'desc' | 'asc' = 'desc'
 ): Promise<{ data: Booking[]; count: number }> {
   try {
     let query = supabase
