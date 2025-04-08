@@ -5,11 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../contexts/CompanyContext';
 import { findContactByEmailOrMobile } from '../services/supabase/contacts';
 import { createBookingWithContact, updateBooking, fetchBooking } from '../services/supabase/bookings';
-import { createTag } from '../services/supabase/tags';
+//import { createTag } from '../services/supabase/tags';
 import { createBookingSchema, type CreateBookingFormData } from '../utils/bookingValidation';
-import type { ContactFields } from '../types/bookings';
-import type { Tag } from '../types/tags';
+import type { ContactFields, Booking } from '../types/bookings';
+//import type { Tag } from '../types/tags';
 import { useEffect } from 'react';
+//import { addTagToContact, removeTagFromContact } from '../services/supabase/contacts'; // Import helper functions
+
 
 export const useBookingForm = (bookingId?: string, initialData = {}) => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
   const [selectedContactTags, setSelectedContactTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
   const [showFields, setShowFields] = useState<ContactFields>({
     first_name: false,
     last_name: false,
@@ -57,11 +60,12 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
   useEffect(() => {
     const loadBookingData = async () => {
       if (bookingId && currentCompany) {
-        try {
-          const booking = await fetchBooking(bookingId);
-          
-          // Populate form with booking data
-          if (booking) {
+          try {
+            const booking = await fetchBooking(bookingId);
+   //         setCurrentBooking(booking);
+    
+            // Populate form with booking data
+            if (booking) {
             // Contact information
             if (booking.contact) {
               setValue('first_name', booking.contact.first_name);
@@ -77,9 +81,11 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
               setValue('country', booking.contact.country || '');
               setValue('email_consent', booking.contact.email_consent || false);
               setValue('sms_consent', booking.contact.sms_consent || false);
-              setSelectedContactTags(booking.contact.contact_tags ?? []);
+  
+              // Set selected contact tags
+              setSelectedContactTags(Array.isArray(booking.contact.contact_tags) ? booking.contact.contact_tags.map((tag) => tag.id) : []);
             }
-            
+  
             // Booking details
             setValue('booking_seated_date', booking.booking_seated_date);
             setValue('booking_seated_time', booking.booking_seated_time);
@@ -92,7 +98,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
             setValue('duration', booking.duration || 90);
             setValue('special_requests', booking.special_requests || '');
             setValue('notes', booking.notes || '');
-            
+  
             // Show all contact fields
             setShowFields({
               first_name: true,
@@ -113,7 +119,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
         }
       }
     };
-    
+  
     loadBookingData();
   }, [bookingId, currentCompany, setValue]);
 
@@ -186,12 +192,6 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
     }
   };
 
-  const handleCreateContactTag = async (tag: Tag) => {
-    if (!currentCompany?.id) return;
-    const newTag = await createTag(currentCompany.id, tag);
-    setSelectedContactTags(prev => [...prev, newTag.id]);
-  };
-
   const onSubmit = async (data: CreateBookingFormData) => {
     if (!currentCompany) return;
 
@@ -247,6 +247,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
     }
   };
 
+
   return {
     reset,
     register,
@@ -259,7 +260,6 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
     selectedContactTags,
     setSelectedContactTags,
     handleContactSearch,
-    handleCreateContactTag,
     onSubmit,
   };
 };

@@ -17,31 +17,42 @@ async function fetchBooking(bookingId: string): Promise<Booking> {
         public_name
       ),
       contact:contacts (
-          id,
-          first_name,
-          last_name,
-          email,
-          mobile,
-          birthday_month,
-          birthday_day,
-          street_address,
-          city,
-          state,
-          postal_code,
-          country,
-          email_consent,
-          contact_tags:contact_tags (
-             tag:tags (id, name)
-    )
+        id,
+        first_name,
+        last_name,
+        email,
+        mobile,
+        birthday_month,
+        birthday_day,
+        street_address,
+        city,
+        state,
+        postal_code,
+        country,
+        email_consent,
+        contact_tags:contact_tags (
+          tags (
+            id,
+            name
+          )
+        )
       )
     `)
     .eq('id', bookingId)
     .single();
 
   if (error) throw error;
+
+  // Transform the contact_tags structure to match the desired format
+  if (data?.contact?.contact_tags) {
+    data.contact.contact_tags = data.contact.contact_tags.map((tag: { tags: { id: string; name: string } }) => ({
+      id: tag.tags.id,
+      name: tag.tags.name,
+    }));
+  }
+
   return data;
 }
-
 
 
 interface CreateBookingContactData {

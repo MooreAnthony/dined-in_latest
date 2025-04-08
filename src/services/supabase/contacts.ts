@@ -18,6 +18,28 @@ interface ContactsResponse {
   };
 }
 
+export const addTagToContact = async (contactId: string, tagId: string) => {
+  const { error } = await supabase
+    .from('contact_tags')
+    .insert({ contact_id: contactId, tag_id: tagId });
+
+  if (error) {
+    throw new Error(`Failed to add tag to contact: ${error.message}`);
+  }
+};
+
+export const removeTagFromContact = async (contactId: string, tagId: string) => {
+  const { error } = await supabase
+    .from('contact_tags')
+    .delete()
+    .eq('contact_id', contactId)
+    .eq('tag_id', tagId);
+
+  if (error) {
+    throw new Error(`Failed to remove tag from contact: ${error.message}`);
+  }
+};
+
 export async function findContactByEmailOrMobile(
   companyId: string,
   email?: string,

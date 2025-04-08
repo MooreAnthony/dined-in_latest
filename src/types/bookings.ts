@@ -99,6 +99,11 @@ export interface BookingFilters {
   maxGuests?: number;
 }
 
+export interface Tag {
+  id: string;
+  name: string;
+}
+
 export interface Contact {
   id: string;
   first_name: string;
@@ -115,7 +120,7 @@ export interface Contact {
   email_consent: boolean;
   sms_consent: boolean;
   notes?: string | null;
-  contact_tags?: string[] | null;
+  contact_tags?: Tag | null;
 }
 
 
