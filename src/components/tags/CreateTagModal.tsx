@@ -14,14 +14,14 @@ const createTagSchema = z.object({
   name: z.string().min(2, 'Tag name must be at least 2 characters'),
   color: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid color format'),
   icon: z.string().min(1, 'Icon is required'),
-  category: z.enum(['contact', 'booking']),
+  category: z.enum(['contact', 'booking', 'auto']),
 });
 
 interface CreateTagModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateTagData) => Promise<void>;
-  category: 'contact' | 'booking';
+  category: 'contact' | 'booking' | 'auto';
 }
 
 export const CreateTagModal: React.FC<CreateTagModalProps> = ({

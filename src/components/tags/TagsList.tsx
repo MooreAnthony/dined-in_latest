@@ -8,6 +8,7 @@ import type { Tag, UpdateTagData } from '../../types/tags';
 
 interface TagsListProps {
   tags: Tag[];
+  selectedCategory: 'contact' | 'booking' | 'auto'; // Add selectedCategory prop
   onUpdate: (id: string, data: UpdateTagData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onReorder: (orderedIds: string[]) => Promise<void>;
@@ -15,6 +16,7 @@ interface TagsListProps {
 
 export const TagsList: React.FC<TagsListProps> = ({
   tags,
+  selectedCategory, // Destructure selectedCategory
   onUpdate,
   onDelete,
   onReorder,
@@ -41,7 +43,8 @@ export const TagsList: React.FC<TagsListProps> = ({
     tag.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (tags.length === 0) {
+  // Only show "No tags defined" for 'contact' or 'booking' categories
+  if (tags.length === 0 && (selectedCategory === 'contact' || selectedCategory === 'booking')) {
     return (
       <div className="bg-dark-secondary rounded-lg border border-dark-border p-8">
         <div className="text-center space-y-3">
@@ -63,19 +66,24 @@ export const TagsList: React.FC<TagsListProps> = ({
 
   return (
     <>
-      {/* Search */}
-      <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-muted" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search tags..."
-          className="w-full pl-12 pr-4 py-3 bg-dark-secondary border border-dark-border rounded-lg
-            text-dark-text-primary placeholder-dark-text-muted
-            focus:outline-none focus:ring-2 focus:ring-dark-accent/50"
-        />
-      </div>
+      {/* Conditionally show Search and Create Tag button */}
+      {(selectedCategory === 'contact' || selectedCategory === 'booking') && (
+        <>
+          {/* Search */}
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-muted" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search tags..."
+              className="w-full pl-12 pr-4 py-3 bg-dark-secondary border border-dark-border rounded-lg
+                text-dark-text-primary placeholder-dark-text-muted
+                focus:outline-none focus:ring-2 focus:ring-dark-accent/50"
+            />
+          </div>
+        </>
+      )}
 
       {/* Tags Grid */}
       <DragDropContext onDragEnd={handleDragEnd}>

@@ -4,7 +4,7 @@ export interface Tag {
   name: string;
   color: string;
   icon: string;
-  category: 'contact' | 'booking';
+  category: 'contact' | 'booking' | 'auto';
   sort_order: number;
   created_at: string;
   created_by: string | null;
@@ -38,6 +38,6 @@ export interface CreateTagData {
   name: string;
   color: string;
   icon: string;
-  category: 'contact' | 'booking';
+  category: 'contact' | 'booking' | 'auto';
   sort_order?: number;
 }
