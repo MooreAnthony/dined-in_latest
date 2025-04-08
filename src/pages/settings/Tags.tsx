@@ -9,7 +9,7 @@ import { useTags } from '../../hooks/useTags';
 export const Tags: React.FC = () => {
   const { currentCompany } = useCompany();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<'contact' | 'booking'>('contact');
+  const [selectedCategory, setSelectedCategory] = useState<'contact' | 'booking'| 'auto'>('contact');
   const { tags, isLoading, error, createTag, updateTag, deleteTag, reorderTags } = useTags(
     currentCompany?.id,
     selectedCategory
@@ -63,6 +63,12 @@ export const Tags: React.FC = () => {
           onClick={() => setSelectedCategory('booking')}
         >
           Booking Tags
+        </Button>
+        <Button
+          variant={selectedCategory === 'auto' ? 'primary' : 'outline'}
+          onClick={() => setSelectedCategory('auto')}
+        >
+          Automation Tags
         </Button>
       </div>
 
