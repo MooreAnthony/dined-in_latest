@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   Calendar,
-  DollarSign,
   Users,
   Star,
   TrendingUp,
   Clock,
   Activity,
   XCircle,
+  PoundSterlingIcon,
 } from 'lucide-react';
 import { KpiCard } from '../../components/dashboard/KpiCard';
 import { BookingsFeed } from '../../components/dashboard/BookingsFeed';
@@ -26,7 +26,7 @@ export const Dashboard: React.FC = () => {
       title: 'Revenue Today',
       value: '£1,248',
       trend: { value: 8, isPositive: true },
-      icon: DollarSign,
+      icon: PoundSterlingIcon,
       description: 'Avg. £52 per booking',
     },
     {
