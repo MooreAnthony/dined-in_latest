@@ -55,6 +55,7 @@ export async function fetchBookingTags(bookingId: string): Promise<Tag[]> {
 }
 
 export async function addContactTags(contactId: string, tagIds: string[]): Promise<void> {
+  console.log('Adding contact tags:', { contactId, tagIds });
   const { error } = await supabase
     .from('contact_tags')
     .insert(

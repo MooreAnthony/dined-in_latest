@@ -8,7 +8,7 @@ import { Icons } from '../../components/tags/IconPicker';
 interface TagSelectorProps {
   tags: Tag[];
   selectedTags: string[];
-  onTagSelect: (tagIds: string[]) => void;
+  onTagSelect: (tagIds: string[], selectedTag: Tag) => void; // updated
   category: 'contact' | 'booking';
   onCreateTag?: (tag: Tag) => void;
 }
@@ -28,16 +28,20 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
   );
 
   const handleTagClick = (tagId: string, event: React.MouseEvent) => {
-    // Prevent form submission
     event.preventDefault();
     event.stopPropagation();
-    
+  
+    const clickedTag = tags.find(tag => tag.id === tagId);
+    if (!clickedTag) return; // safety check
+  
     const isSelected = selectedTags.includes(tagId);
     const newSelectedTags = isSelected
       ? selectedTags.filter(id => id !== tagId)
       : [...selectedTags, tagId];
-    onTagSelect(newSelectedTags);
+  
+    onTagSelect(newSelectedTags, clickedTag);
   };
+
 
   const handleCreateTag = async (tag: Tag) => {
     onCreateTag?.(tag);

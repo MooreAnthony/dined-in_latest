@@ -153,6 +153,7 @@ export const CreateBooking: React.FC = () => {
             show={showFields.tags}
             tags={contactTags}
             selectedTags={selectedContactTags}
+            contactId={currentBooking?.contact?.id ?? ''}
             onTagSelect={setSelectedContactTags}
             onCreateTag={handleCreateContactTag}
           />

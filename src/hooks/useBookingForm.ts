@@ -5,13 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { useCompany } from '../contexts/CompanyContext';
 import { findContactByEmailOrMobile } from '../services/supabase/contacts';
 import { createBookingWithContact, updateBooking, fetchBooking } from '../services/supabase/bookings';
-//import { createTag } from '../services/supabase/tags';
+import { addContactTags, removeContactTags } from '../services/supabase/tags';
 import { createBookingSchema, type CreateBookingFormData } from '../utils/bookingValidation';
 import type { ContactFields, Booking } from '../types/bookings';
-//import type { Tag } from '../types/tags';
 import { useEffect } from 'react';
-//import { addTagToContact, removeTagFromContact } from '../services/supabase/contacts'; // Import helper functions
-
 
 export const useBookingForm = (bookingId?: string, initialData = {}) => {
   const navigate = useNavigate();
@@ -19,7 +16,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
   const [selectedContactTags, setSelectedContactTags] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
+  const [currentBooking ] = useState<Booking | null>(null);
   const [showFields, setShowFields] = useState<ContactFields>({
     first_name: false,
     last_name: false,
@@ -60,12 +57,11 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
   useEffect(() => {
     const loadBookingData = async () => {
       if (bookingId && currentCompany) {
-          try {
-            const booking = await fetchBooking(bookingId);
-   //         setCurrentBooking(booking);
-    
-            // Populate form with booking data
-            if (booking) {
+        try {
+          const booking = await fetchBooking(bookingId);
+
+          // Populate form with booking data
+          if (booking) {
             // Contact information
             if (booking.contact) {
               setValue('first_name', booking.contact.first_name);
@@ -81,11 +77,11 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
               setValue('country', booking.contact.country || '');
               setValue('email_consent', booking.contact.email_consent || false);
               setValue('sms_consent', booking.contact.sms_consent || false);
-  
+
               // Set selected contact tags
               setSelectedContactTags(Array.isArray(booking.contact.contact_tags) ? booking.contact.contact_tags.map((tag) => tag.id) : []);
             }
-  
+
             // Booking details
             setValue('booking_seated_date', booking.booking_seated_date);
             setValue('booking_seated_time', booking.booking_seated_time);
@@ -98,7 +94,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
             setValue('duration', booking.duration || 90);
             setValue('special_requests', booking.special_requests || '');
             setValue('notes', booking.notes || '');
-  
+
             // Show all contact fields
             setShowFields({
               first_name: true,
@@ -119,22 +115,22 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
         }
       }
     };
-  
+
     loadBookingData();
   }, [bookingId, currentCompany, setValue]);
 
   const handleContactSearch = async (field: 'email' | 'mobile') => {
     if (!currentCompany?.id) return;
-    
+
     setIsSearching(true);
     try {
       const email = field === 'email' ? getValues('email') : undefined;
       const mobile = field === 'mobile' ? getValues('mobile') : undefined;
-      
+
       if (!email && !mobile) return;
-      
+
       const contact = await findContactByEmailOrMobile(currentCompany.id, email, mobile);
-      
+
       if (contact) {
         // Populate form with contact details
         setValue('first_name', contact.first_name);
@@ -150,7 +146,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
         setValue('country', contact.country || '');
         setValue('email_consent', contact.email_consent);
         setValue('sms_consent', contact.sms_consent);
-        
+
         // Set selected tags
         if (contact.tags) {
           setSelectedContactTags(contact.tags.map(t => t.id));
@@ -170,7 +166,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
         setValue('sms_consent', false);
         setSelectedContactTags([]);
       }
-      
+
       // Show all fields after search
       setShowFields({
         first_name: true,
@@ -198,17 +194,16 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
     setIsSubmitting(true);
     try {
       if (bookingId) {
-       // Format the datetime properly for timestamp fields
-       const formattedSeatedTime = data.booking_seated_date 
-         ? `${data.booking_seated_date} ${data.booking_seated_time}`
-         : null;
+        // Format the datetime properly for timestamp fields
+        const formattedSeatedTime = data.booking_seated_date 
+          ? `${data.booking_seated_date} ${data.booking_seated_time}`
+          : null;
 
         // Update existing booking
         await updateBooking(bookingId, {
           location_id: data.location_id,
           booking_source: data.booking_source,
           booking_type: data.booking_type,
-         // booking_occasion: data.booking_occasion,
           booking_seated_date: data.booking_seated_date,
           booking_seated_time: data.booking_seated_time,
           covers_adult: data.covers_adult,
@@ -225,11 +220,28 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
           total_net_payment: 0,
           total_gross_payment: 0,
           pos_tickets: [],
-         seated_time: formattedSeatedTime,
-         left_time: formattedSeatedTime,
+          seated_time: formattedSeatedTime,
+          left_time: formattedSeatedTime,
           tags: selectedContactTags,
           table_ids: null,
         });
+
+        // Update contact tags
+        interface ContactTag {
+          id: string;
+        }
+        const existingTags: string[] = Array.isArray(currentBooking?.contact?.contact_tags) 
+          ? currentBooking?.contact?.contact_tags?.map((tag: ContactTag) => tag.id) 
+          : [];
+        const tagsToAdd = selectedContactTags.filter(tagId => !existingTags.includes(tagId));
+        const tagsToRemove = existingTags.filter(tagId => !selectedContactTags.includes(tagId));
+
+        if (tagsToAdd.length > 0 && currentBooking?.contact?.id) {
+          await addContactTags(currentBooking.contact.id, tagsToAdd);
+        }
+        if (tagsToRemove.length > 0 && currentBooking?.contact?.id) {
+          await removeContactTags(currentBooking.contact.id, tagsToRemove);
+        }
       } else {
         // Create new booking with contact
         const bookingData = {
@@ -237,8 +249,14 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
           birthday_month: data.birthday_month === null ? undefined : data.birthday_month,
           birthday_day: data.birthday_day === null ? undefined : data.birthday_day,
         };
-        await createBookingWithContact(currentCompany.id, bookingData);
+        const { contact } = await createBookingWithContact(currentCompany.id, bookingData);
+
+        // Add tags to the new contact
+        if (selectedContactTags.length > 0 && contact.id) {
+          await addContactTags(contact.id, selectedContactTags);
+        }
       }
+
       navigate('/dashboard/bookings');
     } catch (error) {
       console.error('Failed to create booking:', error);
@@ -246,7 +264,6 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
       setIsSubmitting(false);
     }
   };
-
 
   return {
     reset,
@@ -261,5 +278,6 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
     setSelectedContactTags,
     handleContactSearch,
     onSubmit,
+    addContactTags, // Export addContactTags
   };
 };
