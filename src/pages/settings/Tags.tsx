@@ -5,18 +5,17 @@ import { Button } from '../../components/common/Button';
 import { TagsList } from '../../components/tags/TagsList';
 import { CreateTagModal } from '../../components/tags/CreateTagModal';
 import { useTags } from '../../hooks/useTags';
-
+import { AutomationCard } from '../../components/tags/AutomationTagCard';
 
 export const Tags: React.FC = () => {
   const { currentCompany } = useCompany();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'contact' | 'booking' | 'auto'>('contact');
-  const [isBirthdayEnabled, setIsBirthdayEnabled] = useState(false); // Toggle state for Birthday
-  const [birthdayPeriod, setBirthdayPeriod] = useState(10); // Period state for Birthday
-  const { tags, isLoading, error, createTag, updateTag, deleteTag, reorderTags } = useTags(
-    currentCompany?.id,
-    selectedCategory
-  );
+  const { tags, error, isLoading, updateTag, deleteTag, reorderTags, createTag } = useTags(currentCompany?.id, selectedCategory);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isBirthdayEnabled, setIsBirthdayEnabled] = useState(false);
+  const [birthdayPeriod, setBirthdayPeriod] = useState(10);
+  const [isFirstVisitBrandEnabled, setIsFirstVisitBrandEnabled] = useState(false);
+  const [isFirstVisitSiteEnabled, setIsFirstVisitSiteEnabled] = useState(false);
 
   if (!currentCompany) {
     return (
@@ -44,13 +43,14 @@ export const Tags: React.FC = () => {
             {tags.length} Total
           </div>
         </div>
+        {(selectedCategory === 'contact' || selectedCategory === 'booking') && (
         <Button
           onClick={() => setIsCreateModalOpen(true)}
           className="flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Create Tag
-        </Button>
+        </Button> )}
       </div>
 
       {/* Category Selector */}
@@ -69,139 +69,58 @@ export const Tags: React.FC = () => {
         </Button>
         <Button
           variant={selectedCategory === 'auto' ? 'primary' : 'outline'}
-           onClick={() => setSelectedCategory('auto')}
+          onClick={() => setSelectedCategory('auto')}
         >
           Automation Tags
         </Button>
       </div>
 
-      {/* Birthday Process - Only show for Automation Tags */}
+      {/* Automation Tags */}
       {selectedCategory === 'auto' && (
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-        {/* Birthday Tag Card */}
-        <div className="p-4 bg-dark-secondary rounded-lg shadow-md space-y-4">
-          <div className="flex items-center gap-4">
-            <Cake className="w-6 h-6 text-dark-accent" />
-            <div>
-              <h3 className="text-lg font-semibold text-dark-text-primary">Birthday</h3>
-              <p className="text-sm text-dark-text-secondary">
-                Automatically tag contacts who have a birthday within the next, or within the last 'x' days.
-              </p>
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+          {/* Birthday Tag */}
+          <AutomationCard
+            icon={<Cake className="w-6 h-6 text-dark-accent" />}
+            title="Birthday"
+            description="Automatically tag contacts who have a birthday within the next, or within the last 'x' days."
+            isEnabled={isBirthdayEnabled}
+            onToggle={setIsBirthdayEnabled}
+          >
+            <div className="flex items-center gap-4">
+              <label className="text-dark-text-primary text-sm font-medium">
+                Period (days):
+              </label>
+              <input
+                type="number"
+                value={birthdayPeriod}
+                onChange={(e) => setBirthdayPeriod(Number(e.target.value))}
+                className="w-20 px-2 py-1 border rounded-md text-dark-text-primary bg-dark-secondary border-dark-border"
+                min={1}
+                title="Birthday period in days"
+                placeholder="Days"
+              />
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-          <label className="text-dark-text-primary text-sm font-medium">
-            Period (days):
-          </label>
-          <input
-            type="number"
-            value={birthdayPeriod}
-            onChange={(e) => setBirthdayPeriod(Number(e.target.value))}
-            className="w-20 px-2 py-1 border rounded-md text-dark-text-primary bg-dark-secondary border-dark-border"
-            min={1}
-            title="Birthday period in days"
-            placeholder="Days"
+          </AutomationCard>
+
+          {/* First Visit (Brand) Tag */}
+          <AutomationCard
+            icon={<Building2 className="w-6 h-6 text-dark-accent" />}
+            title="First Visit (Brand)"
+            description="Tag customers on their first visit to the brand."
+            isEnabled={isFirstVisitBrandEnabled}
+            onToggle={setIsFirstVisitBrandEnabled}
+          />
+
+          {/* First Visit (Site) Tag */}
+          <AutomationCard
+            icon={<BuildingIcon className="w-6 h-6 text-dark-accent" />}
+            title="First Visit (Site)"
+            description="Automatically tag guests on their first visit to the site."
+            isEnabled={isFirstVisitSiteEnabled}
+            onToggle={setIsFirstVisitSiteEnabled}
           />
         </div>
-          <div className="flex items-center justify-between">
-            <label htmlFor="birthdayToggle" className="text-dark-text-primary text-sm font-medium">
-              Enable Birthday Tagging:
-            </label>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="birthdayToggle"
-                checked={isBirthdayEnabled}
-                onChange={(e) => setIsBirthdayEnabled(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div
-                className="w-10 h-5 bg-gray-300 peer-focus:ring-2 peer-focus:ring-dark-accent rounded-full peer
-                  peer-checked:bg-dark-accent relative transition-all"
-              >
-                <div
-                  className="absolute left-1 top-1 w-3.5 h-3.5 bg-white rounded-full transition-transform
-                    peer-checked:translate-x-5"
-                />
-              </div>
-            </label>
-          </div>
-        </div>
-
-        {/* First Visit (Brand) Tag Card */}
-        <div className="p-4 bg-dark-secondary rounded-lg shadow-md space-y-4">
-          <div className="flex items-center gap-4">
-            <Building2 className="w-6 h-6 text-dark-accent" />
-            <div>
-              <h3 className="text-lg font-semibold text-dark-text-primary">First Visit (Brand)</h3>
-              <p className="text-sm text-dark-text-secondary">
-                Tag customers on their first visit to the brand.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <label htmlFor="firstVisitBrandToggle" className="text-dark-text-primary text-sm font-medium">
-              Enable First Visit Tagging:
-            </label>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="firstVisitBrandToggle"
-                checked={false} // Default off
-                onChange={(e) => console.log('First Visit (Brand) toggled:', e.target.checked)} // Replace with actual handler
-                className="sr-only peer"
-              />
-              <div
-                className="w-10 h-5 bg-gray-300 peer-focus:ring-2 peer-focus:ring-dark-accent rounded-full peer
-                  peer-checked:bg-dark-accent relative transition-all"
-              >
-                <div
-                  className="absolute left-1 top-1 w-3.5 h-3.5 bg-white rounded-full transition-transform
-                    peer-checked:translate-x-5"
-                />
-              </div>
-            </label>
-          </div>
-        </div>
-
-        {/* First Visit (Site) Tag Card */}
-        <div className="p-4 bg-dark-secondary rounded-lg shadow-md space-y-4">
-          <div className="flex items-center gap-4">
-            <BuildingIcon className="w-6 h-6 text-dark-accent" /> {/* Replace with a single location building icon if available */}
-            <div>
-              <h3 className="text-lg font-semibold text-dark-text-primary">First Visit (Site)</h3>
-              <p className="text-sm text-dark-text-secondary">
-                Automatically tag guests on their first visit to the site.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <label htmlFor="firstVisitSiteToggle" className="text-dark-text-primary text-sm font-medium">
-              Enable First Visit Tagging:
-            </label>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="firstVisitSiteToggle"
-                checked={false} // Default off
-                onChange={(e) => console.log('First Visit (Site) toggled:', e.target.checked)} // Replace with actual handler
-                className="sr-only peer"
-              />
-              <div
-                className="w-10 h-5 bg-gray-300 peer-focus:ring-2 peer-focus:ring-dark-accent rounded-full peer
-                  peer-checked:bg-dark-accent relative transition-all"
-              >
-                <div
-                  className="absolute left-1 top-1 w-3.5 h-3.5 bg-white rounded-full transition-transform
-                    peer-checked:translate-x-5"
-                />
-              </div>
-            </label>
-          </div>
-        </div>
-      </div>
-    )}
-
+      )}
 
       {/* Error State */}
       {error && (
@@ -222,10 +141,11 @@ export const Tags: React.FC = () => {
       ) : (
         <TagsList
           tags={tags}
+          selectedCategory={selectedCategory}
           onUpdate={async (id, data) => { await updateTag(id, data); }}
           onDelete={deleteTag}
           onReorder={reorderTags}
-/>
+        />
       )}
 
       {/* Create Tag Modal */}

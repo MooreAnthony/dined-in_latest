@@ -14,6 +14,7 @@ interface TagsListProps {
   onReorder: (orderedIds: string[]) => Promise<void>;
 }
 
+
 export const TagsList: React.FC<TagsListProps> = ({
   tags,
   selectedCategory, // Destructure selectedCategory
@@ -63,6 +64,8 @@ export const TagsList: React.FC<TagsListProps> = ({
       </div>
     );
   }
+
+  
 
   return (
     <>

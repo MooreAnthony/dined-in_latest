@@ -10,6 +10,7 @@ export interface Tag {
   created_by: string | null;
   modified_at: string;
   modified_by: string | null;
+  auto_tag: boolean;
   contact_count: number;
 }
 

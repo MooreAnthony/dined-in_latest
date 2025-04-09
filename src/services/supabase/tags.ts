@@ -5,14 +5,14 @@ import type {
   UpdateTagData,
 } from '../../types/tags';
 
-export async function fetchTags(companyId: string, category?: 'contact' | 'booking'): Promise<Tag[]> {
+export async function fetchTags(companyId: string, category?: 'contact' | 'booking' | 'auto'): Promise<Tag[]> {
   let query = supabase
     .from('tags')
     .select(`
       *,
       contact_count:contact_tags(count)
     `)
-    .eq('company_id', companyId)
+    .or(`company_id.eq.${companyId},company_id.is.null`)
     .order('sort_order');
 
   if (category) {
@@ -22,6 +22,7 @@ export async function fetchTags(companyId: string, category?: 'contact' | 'booki
   const { data, error } = await query;
 
   if (error) throw error;
+
   return data.map(tag => ({
     ...tag,
     contact_count: tag.contact_count?.[0]?.count || 0
@@ -141,7 +142,7 @@ export async function deleteTag(id: string): Promise<void> {
 
 export async function updateTagOrder(
   companyId: string,
-  category: 'contact' | 'booking',
+  category: 'contact' | 'booking' | 'auto',
   orderedIds: string[]
 ): Promise<void> {
   const updates = orderedIds.map((id, index) => ({

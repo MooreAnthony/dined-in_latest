@@ -8,13 +8,14 @@ import {
 } from '../services/supabase/tags';
 import type { Tag, CreateTagData, UpdateTagData } from '../types/tags';
 
-export function useTags(companyId: string | undefined, category?: 'contact' | 'booking' ) {
+export function useTags(companyId: string | undefined, category?: 'contact' | 'booking' | 'auto') {
   const [tags, setTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadTags = async () => {
+      setTags([]);
       if (!companyId || (category !== 'contact' && category !== 'booking')) return; // Only fetch for 'contact' or 'booking'
   
       setIsLoading(true);
