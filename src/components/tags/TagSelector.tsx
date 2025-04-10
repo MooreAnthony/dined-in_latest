@@ -11,6 +11,7 @@ interface TagSelectorProps {
   onTagSelect: (tagIds: string[], selectedTag: Tag) => void; // updated
   category: 'contact' | 'booking';
   onCreateTag?: (tag: Tag) => void;
+  showSearch?: boolean;
 }
 
 export const TagSelector: React.FC<TagSelectorProps> = ({
@@ -19,6 +20,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
   onTagSelect,
   category,
   onCreateTag,
+  showSearch,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -50,30 +52,33 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-muted" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search tags..."
-            className="w-full pl-10 pr-4 py-2 bg-dark-secondary border border-dark-border rounded-lg
-              text-dark-text-primary placeholder-dark-text-muted
-              focus:outline-none focus:ring-2 focus:ring-dark-accent/50"
-          />
-        </div>
-        {onCreateTag && (
-          <Button
-            variant="outline"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Tag
-          </Button>
+        {showSearch && (
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-text-muted" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tags..."
+                className="w-full pl-10 pr-4 py-2 bg-dark-secondary border border-dark-border rounded-lg
+                  text-dark-text-primary placeholder-dark-text-muted
+                  focus:outline-none focus:ring-2 focus:ring-dark-accent/50"
+              />
+            </div>
+            {onCreateTag && (
+              <Button
+                variant="outline"
+                onClick={() => setIsCreateModalOpen(true)}
+                className="whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Tag
+              </Button>
+            )}
+          </div>
         )}
-      </div>
+
 
       <div className="flex flex-wrap gap-2">
         {filteredTags.map(tag => {
@@ -119,6 +124,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
               modified_by: '',
               contact_count: 0,
               sort_order: 0,
+              auto_tag: false,
             };
             await handleCreateTag(tag);
           }}

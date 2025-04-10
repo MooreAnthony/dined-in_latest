@@ -21,36 +21,57 @@ export const ContactTagsSection: React.FC<ContactTagsSectionProps> = ({
   onTagSelect,
   onCreateTag,
 }) => {
+  if (!show) return null;
+
+  // Split the tags based on the auto_tag field
+  const contactTags = tags.filter(tag => tag.auto_tag === false);
+  const autoTags = tags.filter(tag => tag.auto_tag === true);
 
   const handleTagSelect = async (tagIds: string[], clickedTag: Tag) => {
+    if (clickedTag.auto_tag) return;
+  
     const wasPreviouslySelected = selectedTags.includes(clickedTag.id);
-    console.log('contact', contactId)
-    // Call the external add/remove methods
+  
     if (wasPreviouslySelected) {
       await removeContactTags(contactId, [clickedTag.id]);
     } else {
       await addContactTags(contactId, [clickedTag.id]);
     }
-
-    // Call the parent update
+  
     onTagSelect(tagIds, clickedTag.id);
   };
 
-  if (!show) return null;
-
   return (
-    <div className="pt-4 border-t border-dark-border space-y-2">
-      <label className="flex items-center gap-2 text-sm font-medium text-dark-text-secondary">
-        <TagIcon className="w-4 h-4" />
-        Contact Tags
-      </label>
-      <TagSelector
-        tags={tags}
-        selectedTags={selectedTags}
-        onTagSelect={handleTagSelect}
-        category="contact"
-        onCreateTag={onCreateTag}
-      />
-    </div>
+    <>
+      <div className="pt-4 border-t border-dark-border space-y-2">
+        <label className="flex items-center gap-2 text-sm font-medium text-dark-text-secondary">
+          <TagIcon className="w-4 h-4" />
+          Contact Tags
+        </label>
+        <TagSelector
+          tags={contactTags}
+          selectedTags={selectedTags}
+          onTagSelect={handleTagSelect}
+          category="contact"
+          onCreateTag={onCreateTag}
+          showSearch={true}
+        />
+      </div>
+
+      <div className="pt-4 border-t border-dark-border space-y-2">
+        <label className="flex items-center gap-2 text-sm font-medium text-dark-text-secondary">
+          <TagIcon className="w-4 h-4" />
+          Auto Tags
+        </label>
+        <TagSelector
+          tags={autoTags}
+          selectedTags={selectedTags}
+          onTagSelect={handleTagSelect}
+          category="contact"
+          onCreateTag={onCreateTag}
+          showSearch={false}
+        />
+      </div>
+    </>
   );
 };
