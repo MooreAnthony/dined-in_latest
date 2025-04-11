@@ -7,6 +7,7 @@ import { Button } from '../components/common/Button';
 import { LogoBanner } from '../components/common/LogoBanner';
 import Accordion, { AccordionItem } from '../components/common/Accordion';
 
+
 export const LandingPage: React.FC = () => {
   return (
     <div className="container mx-auto space-y-24 text-white bg-[#0e0f19]">

@@ -18,6 +18,7 @@ import { CreateContact } from './pages/dashboard/CreateContact';
 import { Bookings } from './pages/dashboard/Bookings';
 import { CreateBooking } from './pages/dashboard/CreateBooking';
 import { Diary } from './pages/dashboard/Diary';
+import ShowcasePage from './pages/dashboard/ShowcasePage';
 import { System } from './pages/dashboard/System';
 import { Profile } from './pages/dashboard/Profile';
 import { Users } from './pages/settings/Users';
@@ -124,6 +125,7 @@ const App: React.FC = () => {
               <Route path="bookings/create" element={<CreateBooking />} />
               <Route path="bookings/:id" element={<CreateBooking />} />
               <Route path="diary" element={<Diary />} />
+              <Route path="showcasepage" element={<ShowcasePage />} />
               <Route path="system" element={<System />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings/sms" element={<div>SMS Settings</div>} />

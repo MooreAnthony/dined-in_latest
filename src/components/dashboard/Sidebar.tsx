@@ -18,7 +18,8 @@ import {
   UserPlus,
   Plug,
   Tag,
-  Shield
+  Shield,
+  Star
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useAccounts } from '../../hooks/useAccounts';
@@ -44,6 +45,7 @@ const mainMenuItems: MenuItem[] = [
   { path: '/dashboard/bookings', icon: Calendar, label: 'Bookings', ariaLabel: 'Manage bookings' },
   { path: '/dashboard/contacts', icon: Users, label: 'Contacts', ariaLabel: 'Manage contacts' },
   { path: '/dashboard/diary', icon: Calendar, label: 'Diary', ariaLabel: 'Manage service' },
+  { path: '/dashboard/ShowcasePage', icon: Star, label: 'Showcase page', ariaLabel: 'Magic' },
 ];
 
 const settingsMenuItems: SettingsMenuItem[] = [
