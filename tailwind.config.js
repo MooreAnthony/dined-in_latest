@@ -20,6 +20,9 @@ export default {
           },
           border: '#404040',
         },
+        'landing-bg': '#0e0f19',
+        'section-bg': '#1a1b2b',
+        'cta-bg': '#1a237e',
       },
       backgroundSize: {
         '300%': '300%',
@@ -133,6 +136,14 @@ export default {
           '--chart-4': 'oklch(0.663 0.101 254)',
           '--chart-5': 'oklch(0.654 0.123 24)',
         },
+      },
+      spacing: {
+        'hero-padding': '4rem',
+      },
+      textColor: {
+        'hero-title': '#ffffff',
+        'hero-subtitle': '#cccccc',
+        'cta-title': '#ffffff',
       },
     },
   },

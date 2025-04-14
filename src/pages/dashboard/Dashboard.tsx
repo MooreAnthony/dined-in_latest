@@ -2,18 +2,17 @@ import React from 'react';
 import {
   Calendar,
   Users,
-  Star,
   TrendingUp,
-  Clock,
   Activity,
   XCircle,
   PoundSterlingIcon,
 } from 'lucide-react';
 import { KpiCard } from '../../components/dashboard/KpiCard';
 import { BookingsFeed } from '../../components/dashboard/BookingsFeed';
+import LineGraph from '../../components/Testing/LineGraph';
 
 export const Dashboard: React.FC = () => {
-  // Mock data - replace with real data from your backend
+  // Mock data 
   const kpis = [
     {
       title: 'Total Bookings Today',
@@ -37,23 +36,11 @@ export const Dashboard: React.FC = () => {
       description: '12 tables available',
     },
     {
-      title: 'Customer Satisfaction',
-      value: '4.8',
-      icon: Star,
-      description: 'Based on 156 reviews',
-    },
-    {
       title: 'Conversion Rate',
       value: '64%',
       trend: { value: 3, isPositive: false },
       icon: TrendingUp,
       description: '256 visits, 164 bookings',
-    },
-    {
-      title: 'Peak Hours',
-      value: '19:00 - 21:00',
-      icon: Clock,
-      description: '85% occupancy during peak',
     },
     {
       title: 'Active Bookings',
@@ -85,7 +72,8 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {kpis.map((kpi) => (
           <KpiCard
             key={kpi.title}
@@ -96,6 +84,10 @@ export const Dashboard: React.FC = () => {
             description={kpi.description}
           />
         ))}
+      </div>
+      <div className="bg-dark-secondary p-4 rounded-xl">
+            <LineGraph />
+          </div>
       </div>
 
       {/* Recent Bookings Feed */}
