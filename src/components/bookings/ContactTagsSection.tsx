@@ -3,12 +3,14 @@ import { Tag as TagIcon } from 'lucide-react';
 import { TagSelector } from '../tags/TagSelector';
 import type { Tag } from '../../types/tags';
 import { addContactTags, removeContactTags } from '../../services/supabase/tags';
+import { userId } from '../../services/supabase/auth'; // Import userId from auth service
 
 interface ContactTagsSectionProps {
   show: boolean;
   tags: Tag[];
   selectedTags: string[];
   contactId: string;
+  user: string;
   onTagSelect: (tagIds: string[], selectedTagId: string) => void;
   onCreateTag: (tag: Tag) => Promise<void>;
 }
@@ -26,6 +28,8 @@ export const ContactTagsSection: React.FC<ContactTagsSectionProps> = ({
   // Split the tags based on the auto_tag field
   const contactTags = tags.filter(tag => tag.auto_tag === false);
   const autoTags = tags.filter(tag => tag.auto_tag === true);
+  const user = userId.data?.user?.id || ''; // Assuming userId is a string, adjust if necessary
+
 
   const handleTagSelect = async (tagIds: string[], clickedTag: Tag) => {
     if (clickedTag.auto_tag) return;
@@ -35,7 +39,7 @@ export const ContactTagsSection: React.FC<ContactTagsSectionProps> = ({
     if (wasPreviouslySelected) {
       await removeContactTags(contactId, [clickedTag.id]);
     } else {
-      await addContactTags(contactId, [clickedTag.id]);
+      await addContactTags(contactId, [clickedTag.id], user); // Use userId here
     }
   
     onTagSelect(tagIds, clickedTag.id);

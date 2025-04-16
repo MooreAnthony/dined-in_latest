@@ -58,56 +58,6 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     loadInitialCompany();
   }, []);
-/*
-  // Subscribe to company changes
-  useEffect(() => {
-    if (!currentCompany) return;
-
-    const subscription = supabase
-      .channel('company_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'companies',
-          filter: `id=eq.${currentCompany.id}`,
-        },
-        async (payload) => {
-          if (payload.eventType === 'DELETE') {
-            setCurrentCompany(null);
-            navigate('/dashboard');
-          } else {
-            // Refresh company data
-            const { data } = await supabase
-              .from('company_users')
-              .select(`
-                role,
-                company:companies (
-                  id,
-                  name
-                )
-              `)
-              .eq('company_id', currentCompany.id)
-              .single();
-
-            if (data) {
-              setCurrentCompany({
-                id: data.company.id,
-                name: data.company.name,
-                role: data.role,
-              });
-            }
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [currentCompany, navigate]);
-*/
   return (
     <CompanyContext.Provider 
       value={{ 

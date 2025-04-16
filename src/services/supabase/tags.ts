@@ -55,14 +55,15 @@ export async function fetchBookingTags(bookingId: string): Promise<Tag[]> {
   return data.map(item => item.tag as unknown as Tag);
 }
 
-export async function addContactTags(contactId: string, tagIds: string[]): Promise<void> {
-  console.log('Adding contact tags:', { contactId, tagIds });
+export async function addContactTags(contactId: string, tagIds: string[], userId: string): Promise<void> {
+  console.log('Adding contact tags:', { contactId, tagIds, userId });
   const { error } = await supabase
     .from('contact_tags')
     .insert(
       tagIds.map(tagId => ({
         contact_id: contactId,
-        tag_id: tagId
+        tag_id: tagId,
+        created_by: userId,
       }))
     );
 

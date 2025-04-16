@@ -15,6 +15,7 @@ import { FormActions } from '../../components/bookings/FormActions';
 import { useBookingForm } from '../../hooks/useBookingForm';
 import type { Booking } from '../../types/bookings';
 import { MessageBox } from '../../components/common/MessageBox';
+import Tabs from '../../components/common/Tabs';
 
 export const CreateBooking: React.FC = () => {
   const navigate = useNavigate();
@@ -122,7 +123,12 @@ export const CreateBooking: React.FC = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <Tabs
+          tabs={[
+            {
+              label: 'Booking Details',
+              content: <div className="text-white">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Contact Details */}
         <div className="bg-dark-secondary rounded-lg border border-dark-border p-6 space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-dark-border">
@@ -154,6 +160,7 @@ export const CreateBooking: React.FC = () => {
             tags={contactTags}
             selectedTags={selectedContactTags}
             contactId={currentBooking?.contact?.id ?? ''}
+            user={currentCompany?.id ?? ''}
             onTagSelect={setSelectedContactTags}
             onCreateTag={handleCreateContactTag}
           />
@@ -175,6 +182,16 @@ export const CreateBooking: React.FC = () => {
           isEditing={!!bookingId}
         />
       </form>
+              </div>,
+            },
+            {
+              label: 'Booking History',
+              content: <div className="text-white">
+              </div>,
+            },
+          ]}
+        />
+
 
       {/* MessageBox for Cancel Confirmation */}
       {showCancelConfirm && (
