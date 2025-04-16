@@ -6,7 +6,7 @@ import PieChart from '../../components/Testing/PieChart'; // Import the chart
 import SidebarExample from '../../components/Testing/Sidebar2'; // Import the sidebar
 import ChecklistSteps from '../../components/Testing/ChecklistSteps';
 import Tabs from '../../components/common/Tabs';
-import BookingInteractions from '../../components/Testing/bookingInteractions';
+import BookingInteractions from '../../components/Testing/BookingInteractions';
 
 const steps = [
   { label: 'Add a venue', completed: true, required: true,route: '../../dashboard/settings/Locations' },

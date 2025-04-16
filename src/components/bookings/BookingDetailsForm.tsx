@@ -5,7 +5,7 @@ import type { Location, VenueGroup } from '../../types/locations';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
 
 interface BookingFormValues {
-  venue_group_id: string;
+  venue_group_id?: string;
   location_id: string;
   booking_source: string;
   booking_type: string;

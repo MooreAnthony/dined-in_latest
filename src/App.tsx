@@ -20,7 +20,7 @@ import { CreateBooking } from './pages/dashboard/CreateBooking';
 import { Diary } from './pages/dashboard/Diary';
 import ShowcasePage from './pages/dashboard/ShowcasePage';
 import { System } from './pages/dashboard/System';
-import { Profile } from './pages/dashboard/Profile';
+//import { Profile } from './pages/dashboard/Profile';
 import { Users } from './pages/settings/Users';
 import { Roles } from './pages/settings/Roles';
 import { RoleDetails } from './pages/settings/RoleDetails';
@@ -29,6 +29,7 @@ import { LocationForm } from './pages/settings/LocationForm';
 import { Tags } from './pages/settings/Tags';
 import { ApiUsers } from './pages/settings/ApiUsers';
 import { Emails } from './pages/settings/Emails';
+import  ContactProfile  from './pages/dashboard/contact/profile'; 
 
 const App: React.FC = () => {
   return (
@@ -127,11 +128,11 @@ const App: React.FC = () => {
               <Route path="diary" element={<Diary />} />
               <Route path="showcasepage" element={<ShowcasePage />} />
               <Route path="system" element={<System />} />
-              <Route path="profile" element={<Profile />} />
               <Route path="settings/sms" element={<div>SMS Settings</div>} />
               <Route path="settings/roles" element={<Roles />} />
               <Route path="settings/emails" element={<Emails />} />
               <Route path="settings/roles/:id" element={<RoleDetails />} />
+              <Route path="contact/profile/:contact_id" element={<ContactProfile />} />
               <Route path="settings/users" element={<Users />} />
               <Route path="settings/tags" element={<Tags />} />
               <Route path="settings/api-users" element={<ApiUsers />} />

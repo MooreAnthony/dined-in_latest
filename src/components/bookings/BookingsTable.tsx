@@ -5,6 +5,7 @@ import {
   ChevronRight, 
   ArrowUpDown,
   Loader2,
+  User,
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import type { Booking, BookingStatus } from '../../types/bookings';
@@ -203,15 +204,26 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
                     })}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="space-y-1">
-                      <div className="text-sm text-dark-text-secondary">
-                      {booking.contact?.email || '-'}
-                      </div>
-                      <div className="text-dark-text-primary">
-                        {booking.contact 
-                          ? `${booking.contact.first_name} ${booking.contact.last_name}`
-                          : '-'
-                        }
+                    <div className="flex items-start gap-3">
+                      {booking.contact && (
+                        <User
+                          className="w-6 h-6 flex-shrink-0 cursor-pointer text-dark-accent hover:text-dark-accent/80"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/dashboard/contact/profile/${booking.contact_id}`);
+                          }}
+                        />
+                      )}
+                      <div>
+                        <div className="text-dark-text-primary">
+                          {booking.contact 
+                            ? `${booking.contact.first_name} ${booking.contact.last_name}`
+                            : '-'
+                          }
+                        </div>
+                        <div className="text-sm text-dark-text-secondary">
+                          {booking.contact?.email || '-'}
+                        </div>
                       </div>
                     </div>
                   </td>

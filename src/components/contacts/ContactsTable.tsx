@@ -4,6 +4,7 @@ import * as Icons from 'lucide-react';
 import { Button } from '../common/Button';
 import { formatDate } from '../../utils/date';
 import type { Contact } from '../../types/contacts';
+import { useNavigate } from 'react-router-dom';
 
 interface ContactsTableProps {
   currentPage: number;
@@ -60,6 +61,7 @@ export const ContactsTable: React.FC<ContactsTableProps> = ({
   onSort,
 }) => {
   const totalPages = Math.ceil(totalCount / 25);
+  const navigate = useNavigate();
 
   return (
     <div className="bg-dark-secondary rounded-lg border border-dark-border">
@@ -166,6 +168,9 @@ export const ContactsTable: React.FC<ContactsTableProps> = ({
               <tr
                 key={contact.id}
                 className="hover:bg-dark-primary/50 transition-colors"
+                onClick={() => {
+                    navigate(`/dashboard/contact/profile/${contact.id}`);
+                  }}
               >
                 <td className="px-6 py-4 text-dark-text-primary">
                   <div className="space-y-2">
