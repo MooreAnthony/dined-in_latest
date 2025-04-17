@@ -12,6 +12,7 @@ export async function fetchTags(companyId: string, category?: 'contact' | 'booki
       *,
       contact_count:contact_tags(count)
     `)
+    .eq('deleted', false)
     .or(`company_id.eq.${companyId},company_id.is.null`)
     .order('sort_order');
 
@@ -36,7 +37,8 @@ export async function fetchContactTags(contactId: string): Promise<Tag[]> {
       tag_id,
       tag:tags (*)
     `)
-  .eq('contact_id', contactId);
+    .eq('contact_id', contactId)
+    .is('tags.deleted', false); 
 
   if (error) throw error;
   return data.flatMap(item => item.tag as Tag[]);
@@ -135,7 +137,7 @@ export async function updateTag(id: string, data: UpdateTagData): Promise<Tag> {
 export async function deleteTag(id: string): Promise<void> {
   const { error } = await supabase
     .from('tags')
-    .delete()
+    .update({ deleted: true })
     .eq('id', id);
 
   if (error) throw error;

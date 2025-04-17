@@ -12,6 +12,7 @@ export interface Tag {
   modified_by: string | null;
   auto_tag: boolean;
   contact_count: number;
+  deleted: boolean;
 }
 
 export interface UpdateTagData {
