@@ -18,6 +18,7 @@ export default function ContactProfilePage() {
   const [contactInteractions, setContactInteractions] = useState<Interaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [isDirty, setIsDirty] = useState(false); // 🟢 New state for form dirtiness
 
   useEffect(() => {
     const getContactAndInteractions = async () => {
@@ -58,7 +59,13 @@ export default function ContactProfilePage() {
           <Button
             variant="outline"
             className="p-2"
-            onClick={() => setShowCancelConfirm(true)}
+            onClick={() => {
+              if (isDirty) {
+                setShowCancelConfirm(true);
+              } else {
+                navigate(-1);
+              }
+            }}
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -68,13 +75,15 @@ export default function ContactProfilePage() {
         </div>
       </div>
 
+      {/* Tabs */}
       <Tabs
         tabs={[
           {
             label: 'Contact Profile',
             content: (
               <div className="min-h-screen bg-dark-primary text-white p-6">
-                <ContactProfile contact={contact} />
+                {/* 🔄 Pass setIsDirty to the form */}
+                <ContactProfile contact={contact} onDirtyChange={setIsDirty} />
               </div>
             ),
           },
@@ -100,11 +109,11 @@ export default function ContactProfilePage() {
       {/* Cancel Confirmation MessageBox */}
       {showCancelConfirm && (
         <MessageBox
-          title="Cancel Booking"
-          message="Are you sure you want to cancel? Any unsaved changes will be lost."
+          title="Unsaved Changes"
+          message="You have unsaved changes. Are you sure you want to leave without saving?"
           onConfirm={() => {
             setShowCancelConfirm(false);
-            navigate('/dashboard/bookings');
+            navigate(-1); // Or go to a specific page
           }}
           onCancel={() => setShowCancelConfirm(false)}
         />

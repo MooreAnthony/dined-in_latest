@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import type { Booking, BookingStatus } from '../../types/bookings';
+import { BookingStatusBadge } from '../../components/common/BookingStatusBadge';
 
 interface BookingsTableProps {
   bookings: Booking[];
@@ -22,22 +23,6 @@ interface BookingsTableProps {
   onDelete: (id: string) => Promise<void>;
 }
 
-const getStatusColor = (status: BookingStatus) => {
-  switch (status) {
-    case 'Complete':
-      return 'bg-green-400/10 text-green-400';
-    case 'Pending':
-      return 'bg-yellow-400/10 text-yellow-400';
-    case 'Cancelled':
-      return 'bg-red-400/10 text-red-400';
-    case 'Arrived':
-      return 'bg-blue-400/10 text-blue-400';
-    case 'No Show':
-      return 'bg-purple-400/10 text-purple-400';
-    default:
-      return 'bg-gray-400/10 text-gray-400';
-  }
-};
 
 interface SortableColumnProps {
   field: keyof Booking;
@@ -247,13 +232,8 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
                     {booking.booking_type}
                   </td>
                   <td className="px-6 py-4">
-                    <span
-                      className={`
-                        px-2 py-1 rounded-full text-xs font-medium
-                        ${getStatusColor(booking.booking_status as BookingStatus)}
-                      `}
-                    >
-                      {booking.booking_status}
+                    <span>
+                        <BookingStatusBadge status={booking.booking_status} />
                     </span>
                   </td>
                 </tr>
