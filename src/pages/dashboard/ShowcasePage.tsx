@@ -6,7 +6,8 @@ import PieChart from '../../components/Testing/PieChart'; // Import the chart
 import SidebarExample from '../../components/Testing/Sidebar2'; // Import the sidebar
 import ChecklistSteps from '../../components/Testing/ChecklistSteps';
 import Tabs from '../../components/common/Tabs';
-import BookingInteractions from '../../components/Testing/BookingInteractions';
+import AllInteractions from '../../components/common/Interactions'; // Import Interaction type
+import { Interaction } from '../../types/interaction'; 
 
 const steps = [
   { label: 'Add a venue', completed: true, required: true,route: '../../dashboard/settings/Locations' },
@@ -16,13 +17,13 @@ const steps = [
   { label: 'Setup payment gateway', completed: false, required: false },
 ];
 
-const dummyInteractions = [
+const dummyInteractions: Interaction[] = [ // Add Interaction[] type annotation
   {
     id: '1',
     category: 'booking',
     sub_category: 'booking_created',
     summary: 'Booking created by John Doe',
-    detail: { table: 'T1', guests: 4 },
+    detail: { table: {from: 'T1', to: 'T1'}, guests: {from: 4, to: 4} },
     created_at: '2025-04-10T12:00:00Z',
   },
   {
@@ -38,7 +39,7 @@ const dummyInteractions = [
     category: 'contact',
     sub_category: 'contact_tag_added',
     summary: 'VIP tag added to Jane Smith',
-    detail: { tag: 'VIP' },
+    detail: { tag: {from: 'VIP', to: 'VIP'} },
     created_at: '2025-04-12T09:45:00Z',
   },
 ];
@@ -98,10 +99,8 @@ const ShowcasePage = () => {
           </div>
         </div>
         <div className="bg-dark-secondary p-4 rounded-xl">
-        <BookingInteractions 
+        <AllInteractions
           interactions={dummyInteractions}
-          bookingId="demo-booking-id"
-          fetchInteractions={() => Promise.resolve(dummyInteractions)}
         />
           </div>
       </div>

@@ -1,21 +1,14 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { ScrollArea } from '../../components/Testing/ScrollArea';
+import { ScrollArea } from '../Testing/ScrollArea';
+import { Interaction } from '../../types/interaction'; 
 
-interface Interaction {
-  id: string;
-  category: string;
-  sub_category: string;
-  summary: string;
-  detail?: Record<string, { from: string | number | boolean | null; to: string | number | boolean | null }>;
-  created_at: string;
-}
 
-interface BookingInteractionsProps {
+interface InteractionsProps {
   interactions: Interaction[];
 }
 
-export default function BookingInteractions({ interactions }: BookingInteractionsProps) {
+export default function AllInteractions({ interactions }: InteractionsProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filtered = interactions.filter((interaction) =>
@@ -25,7 +18,7 @@ export default function BookingInteractions({ interactions }: BookingInteraction
   return (
     <div className="w-full space-y-6 bg-dark-secondary p-6 rounded-2xl shadow-md">
       <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-white">Booking Interactions</h2>
+        <h2 className="text-xl font-semibold text-white">Interactions</h2>
         <input
           type="text"
           placeholder="Search interactions..."

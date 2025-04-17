@@ -4,11 +4,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, UserPlus } from 'lucide-react';
 import { z } from 'zod';
-import { Button } from '../../components/common/Button';
-import { FormField } from '../../components/common/FormField';
-import { useCompany } from '../../contexts/CompanyContext';
-import { COUNTRIES } from '../../utils/constants';
-import { createContact } from '../../services/supabase/contacts';
+import { Button } from '../../../components/common/Button';
+import { FormField } from '../../../components/common/FormField';
+import { useCompany } from '../../../contexts/CompanyContext';
+import { COUNTRIES } from '../../../utils/constants';
+import { createContact } from '../../../services/supabase/contacts';
+
 
 const contactSchema = z.object({
   first_name: z.string().min(2, 'First name must be at least 2 characters'),
@@ -30,6 +31,7 @@ const contactSchema = z.object({
   notes: z.string().optional(),
   is_test_profile: z.boolean().default(false),
 });
+
 
 type ContactFormData = z.infer<typeof contactSchema>;
 

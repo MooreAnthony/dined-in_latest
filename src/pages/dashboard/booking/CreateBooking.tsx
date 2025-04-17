@@ -2,21 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
-import { Button } from '../../components/common/Button';
-import { useCompany } from '../../contexts/CompanyContext';
-import { useTags } from '../../hooks/useTags';
-import { fetchBooking } from '../../services/supabase/bookings';
-import { useLocations } from '../../hooks/useLocations';
-import { ContactSearch } from '../../components/bookings/ContactSearch';
-import { ContactDetails } from '../../components/bookings/ContactDetails';
-import { ContactTagsSection } from '../../components/bookings/ContactTagsSection';
-import { BookingDetailsForm } from '../../components/bookings/BookingDetailsForm';
-import { FormActions } from '../../components/bookings/FormActions';
-import { useBookingForm } from '../../hooks/useBookingForm';
-import type { Booking } from '../../types/bookings';
-import { MessageBox } from '../../components/common/MessageBox';
-import Tabs from '../../components/common/Tabs';
-import BookingInteractions from '../../components/Testing/BookingInteractions';
+import { Button } from '../../../components/common/Button';
+import { useCompany } from '../../../contexts/CompanyContext';
+import { useTags } from '../../../hooks/useTags';
+import { fetchBooking } from '../../../services/supabase/bookings';
+import { useLocations } from '../../../hooks/useLocations';
+import { ContactSearch } from '../../../components/bookings/ContactSearch';
+import { ContactDetails } from '../../../components/bookings/ContactDetails';
+import { ContactTagsSection } from '../../../components/bookings/ContactTagsSection';
+import { BookingDetailsForm } from '../../../components/bookings/BookingDetailsForm';
+import { FormActions } from '../../../components/bookings/FormActions';
+import { useBookingForm } from '../../../hooks/useBookingForm';
+import type { Booking } from '../../../types/bookings';
+import { MessageBox } from '../../../components/common/MessageBox';
+import Tabs from '../../../components/common/Tabs';
+import AllInteractions from '../../../components/common/Interactions'; // Import Interaction type
+import { Interaction } from '../../../types/interaction'; // Import Interaction type
+import { fetchBookingInteractions } from '../../../services/supabase/interactions';
 
 
 export const CreateBooking: React.FC = () => {
@@ -30,42 +32,8 @@ export const CreateBooking: React.FC = () => {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false); // State for MessageBox
   const { locations, isLoading } = useLocations();
   const { tags: contactTags } = useTags(currentCompany?.id, 'contact');
+  const [bookingInteractions, setBookingInteractions] = useState<Interaction[]>([]);
 
-  // for audit history, can be removed once live data feeds in
-  const dummyInteractions = [
-    {
-      id: '1',
-      category: 'booking',
-      sub_category: 'booking_created',
-      summary: 'Booking created by John Doe',
-      detail: { 
-        table: { from: null, to: 'T1' },
-        guests: { from: null, to: 4 }
-      },
-      created_at: '2025-04-10T12:00:00Z',
-    },
-    {
-      id: '2',
-      category: 'Contact',
-      sub_category: 'Updated',
-      summary: 'Michael Williamss profile was updated',
-      detail: {
-        "last_name": {"to": "Williamss", "from": "Williams"},
-        "modified_at": {"to": "2025-04-14T16:38:14.631003+00:00", "from": "2025-03-18T10:06:28.881314+00:00"}
-      },
-      created_at: '2025-04-11T14:30:00Z',
-    },
-    {
-      id: '3',
-      category: 'contact',
-      sub_category: 'contact_tag_added',
-      summary: 'VIP tag added to Jane Smith',
-      detail: { 
-        tag: { from: null, to: 'VIP' }
-      },
-      created_at: '2025-04-12T09:45:00Z',
-    },
-  ];
 
   const {
     register,
@@ -87,12 +55,16 @@ export const CreateBooking: React.FC = () => {
   useEffect(() => {
     if (hasFetched.current) return;
     if (!bookingId || !currentCompany) return;
-
+  
     const loadBooking = async () => {
       setIsLoadingBooking(true);
       try {
         const booking = await fetchBooking(bookingId);
         setCurrentBooking(booking);
+  
+        const interactions = await fetchBookingInteractions(bookingId);
+        setBookingInteractions(interactions);
+  
         hasFetched.current = true;
       } catch (error) {
         console.error('Failed to load booking:', error);
@@ -101,9 +73,9 @@ export const CreateBooking: React.FC = () => {
         setIsLoadingBooking(false);
       }
     };
-
     loadBooking();
   }, [bookingId, currentCompany, navigate]);
+
 
   const selectedVenueGroup = watch('venue_group_id');
 
@@ -218,17 +190,15 @@ export const CreateBooking: React.FC = () => {
           isSubmitting={isSubmitting}
           isEditing={!!bookingId}
         />
-      </form>
+        </form>
               </div>,
             },
             {
               label: 'Booking History',
               content: <div className="text-white">
-                        <BookingInteractions 
-                          interactions={dummyInteractions}
-                          bookingId="demo-booking-id"
-                          fetchInteractions={() => Promise.resolve(dummyInteractions)}
-                        />
+              <AllInteractions
+                interactions={bookingInteractions}
+              />
               </div>,
             },
           ]}

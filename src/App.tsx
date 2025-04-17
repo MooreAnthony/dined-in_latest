@@ -14,9 +14,9 @@ import { VerifyEmail } from './components/auth/VerifyEmail';
 import { DashboardLayout } from './components/dashboard/DashboardLayout';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { Contacts } from './pages/dashboard/Contacts';
-import { CreateContact } from './pages/dashboard/CreateContact';
+import { CreateContact } from './pages/dashboard/contact/CreateContact';
 import { Bookings } from './pages/dashboard/Bookings';
-import { CreateBooking } from './pages/dashboard/CreateBooking';
+import { CreateBooking } from './pages/dashboard/booking/CreateBooking';
 import { Diary } from './pages/dashboard/Diary';
 import ShowcasePage from './pages/dashboard/ShowcasePage';
 import { System } from './pages/dashboard/System';
@@ -138,7 +138,7 @@ const App: React.FC = () => {
               <Route path="settings/api-users" element={<ApiUsers />} />
               <Route path="settings/locations" element={<Locations />} />
               <Route path="settings/locations/new" element={<LocationForm />} />
-              <Route path="settings/locations/:id/edit" element={<LocationForm isEditing={true} />} />
+              <Route path="settings/locations/:id/edit" element={<LocationForm />} />
               <Route path="settings/users" element={<div>Users Settings</div>} />
               <Route path="settings/integrations" element={<div>Integrations Settings</div>} />
             </Route>
