@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '../common/Button';
 import { FormField } from '../common/FormField';
+import { SearchIcon } from 'lucide-react'; // Assuming you use lucide-react for icons
 
 interface ContactSearchProps {
   onSearch: (field: 'email' | 'mobile') => Promise<void>;
@@ -23,33 +23,25 @@ export const ContactSearch: React.FC<ContactSearchProps> = ({
           type="email"
           {...register('email')}
           error={errors.email?.message}
+          icon={SearchIcon} // Add search icon
+          onIconClick={() => onSearch('email')} // Add click handler for the icon
+          iconProps={{ // Pass props to the icon if needed, e.g., loading state
+            className: isSearching ? 'animate-spin' : '',
+          }}
         />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => onSearch('email')}
-          className="w-full"
-          isLoading={isSearching}
-        >
-          Search by Email
-        </Button>
       </div>
       <div className="space-y-2">
         <FormField
           label="Mobile Number"
-          placeholder="+1234567890"
+          placeholder="+7812313131"
           {...register('mobile')}
           error={errors.mobile?.message}
+          icon={SearchIcon} // Add search icon
+          onIconClick={() => onSearch('mobile')} // Add click handler for the icon
+          iconProps={{ // Pass props to the icon if needed, e.g., loading state
+            className: isSearching ? 'animate-spin' : '',
+          }}
         />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => onSearch('mobile')}
-          className="w-full"
-          isLoading={isSearching}
-        >
-          Search by Mobile
-        </Button>
       </div>
     </div>
   );

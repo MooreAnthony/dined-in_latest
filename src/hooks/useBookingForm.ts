@@ -9,6 +9,7 @@ import { addContactTags, removeContactTags } from '../services/supabase/tags';
 import { createBookingSchema, type CreateBookingFormData } from '../utils/bookingValidation';
 import type { ContactFields, Booking } from '../types/bookings';
 import { useEffect } from 'react';
+import { userId } from '../services/supabase/auth';
 
 export const useBookingForm = (bookingId?: string, initialData = {}) => {
   const navigate = useNavigate();
@@ -237,7 +238,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
         const tagsToRemove = existingTags.filter(tagId => !selectedContactTags.includes(tagId));
 
         if (tagsToAdd.length > 0 && currentBooking?.contact?.id) {
-          await addContactTags(currentBooking.contact.id, tagsToAdd);
+          await addContactTags(currentBooking.contact.id, tagsToAdd,userId.data?.user?.id || '');
         }
         if (tagsToRemove.length > 0 && currentBooking?.contact?.id) {
           await removeContactTags(currentBooking.contact.id, tagsToRemove);
@@ -253,7 +254,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
 
         // Add tags to the new contact
         if (selectedContactTags.length > 0 && contact.id) {
-          await addContactTags(contact.id, selectedContactTags);
+          await addContactTags(contact.id, selectedContactTags, userId.data?.user?.id || ''); 
         }
       }
 

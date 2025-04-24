@@ -18,7 +18,7 @@ export default function ContactProfilePage() {
   const [contactInteractions, setContactInteractions] = useState<Interaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
-  const [isDirty, setIsDirty] = useState(false); // 🟢 New state for form dirtiness
+  const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
     const getContactAndInteractions = async () => {

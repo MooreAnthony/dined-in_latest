@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Loader2, ChevronDown, ChevronUp } from 'lucide-react'; // Added ChevronDown, ChevronUp
 import { Button } from '../../../components/common/Button';
 import { useCompany } from '../../../contexts/CompanyContext';
 import { useTags } from '../../../hooks/useTags';
@@ -29,10 +29,11 @@ export const CreateBooking: React.FC = () => {
   const { currentCompany } = useCompany();
   const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
   //const [venueGroups] = useState<{ id: string; name: string }[]>([]);
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false); // State for MessageBox
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false); 
   const { locations, isLoading } = useLocations();
   const { tags: contactTags } = useTags(currentCompany?.id, 'contact');
   const [bookingInteractions, setBookingInteractions] = useState<Interaction[]>([]);
+  const [isContactInfoExpanded, setIsContactInfoExpanded] = useState(true); // Added state for expansion
 
 
   const {
@@ -140,39 +141,56 @@ export const CreateBooking: React.FC = () => {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Contact Details */}
         <div className="bg-dark-secondary rounded-lg border border-dark-border p-6 space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-dark-border">
-            <div className="p-2 bg-dark-accent/10 rounded-lg">
-              <User className="w-5 h-5 text-dark-accent" />
+          {/* Make header clickable and add icon */}
+          <button
+            type="button" // Prevent form submission
+            onClick={() => setIsContactInfoExpanded(!isContactInfoExpanded)}
+            className="flex items-center justify-between w-full gap-3 pb-4 border-b border-dark-border cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-dark-accent/10 rounded-lg">
+                <User className="w-5 h-5 text-dark-accent" />
+              </div>
+              <div>
+                <h3 className="font-medium text-dark-text-primary text-left">Basic Information</h3>
+                <p className="text-sm text-dark-text-secondary text-left">Enter the customer's contact information</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-medium text-dark-text-primary">Basic Information</h3>
-              <p className="text-sm text-dark-text-secondary">Enter the customer's contact information</p>
-            </div>
-          </div>
+            {isContactInfoExpanded ? (
+              <ChevronUp className="w-5 h-5 text-dark-text-secondary" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-dark-text-secondary" />
+            )}
+          </button>
 
-          <ContactSearch
-            onSearch={handleContactSearch}
-            register={register}
-            errors={errors}
-            isSearching={isSearching}
-          />
+          {/* Conditionally render content */}
+          {isContactInfoExpanded && (
+            <>
+              <ContactSearch
+                onSearch={handleContactSearch}
+                register={register}
+                errors={errors}
+                isSearching={isSearching}
+              />
 
-          <ContactDetails
-            showFields={showFields}
-            register={register}
-            errors={errors}
-            isSearching={isSearching}
-          />
+              <ContactDetails
+                showFields={showFields}
+                register={register}
+                errors={errors}
+                isSearching={isSearching}
+              />
 
-          <ContactTagsSection
-            show={showFields.tags}
-            tags={contactTags}
-            selectedTags={selectedContactTags}
-            contactId={currentBooking?.contact?.id ?? ''}
-            user={currentCompany?.id ?? ''}
-            onTagSelect={setSelectedContactTags}
-            onCreateTag={handleCreateContactTag}
-          />
+              <ContactTagsSection
+                show={showFields.tags}
+                tags={contactTags}
+                selectedTags={selectedContactTags}
+                contactId={currentBooking?.contact?.id ?? ''}
+                user={currentCompany?.id ?? ''}
+                onTagSelect={setSelectedContactTags}
+                onCreateTag={handleCreateContactTag}
+              />
+            </>
+          )}
         </div>
 
         {/* Booking Details */}

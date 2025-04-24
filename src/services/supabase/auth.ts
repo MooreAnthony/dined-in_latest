@@ -2,6 +2,7 @@ import { supabase } from './config';
 import type { SignUpFormData } from '../../types';
 
 export const userId = await supabase.auth.getUser();
+console.log('userId:', userId);
 
 export const signUp = async ({ email, password, firstName, lastName, mobile }: SignUpFormData) => {  
   const { data, error } = await supabase.auth.signUp({
