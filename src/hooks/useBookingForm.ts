@@ -10,6 +10,8 @@ import { createBookingSchema, type CreateBookingFormData } from '../utils/bookin
 import type { ContactFields, Booking } from '../types/bookings';
 import { useEffect } from 'react';
 import { userId } from '../services/supabase/auth';
+import { fetchBookingOccasions } from '../services/supabase/bookings';
+
 
 export const useBookingForm = (bookingId?: string, initialData = {}) => {
   const navigate = useNavigate();
@@ -89,7 +91,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
             setValue('location_id', booking.location_id || '');
             setValue('booking_source', booking.booking_source as 'In house' | 'Online' | 'Phone' | 'Internal');
             setValue('booking_type', booking.booking_type as 'Table' | 'Function');
-            setValue('booking_occasion', booking.booking_occasion || '');
+            setValue('booking_occasion_id', booking.booking_occasion_id || '');
             setValue('covers_adult', booking.covers_adult);
             setValue('covers_child', booking.covers_child ?? 0);
             setValue('duration', booking.duration || 90);
@@ -209,6 +211,7 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
           booking_seated_time: data.booking_seated_time,
           covers_adult: data.covers_adult,
           covers_child: data.covers_child,
+          booking_occasion_id: data.booking_occasion_id,
           duration: data.duration,
           special_requests: data.special_requests,
           notes: data.notes,
@@ -280,5 +283,22 @@ export const useBookingForm = (bookingId?: string, initialData = {}) => {
     handleContactSearch,
     onSubmit,
     addContactTags, // Export addContactTags
+    BookingOccasion,
   };
+};
+
+export const BookingOccasion = async (companyId: string, occasionId: string) => {
+  if (!companyId || !occasionId) {
+    console.error('Company ID and Occasion ID are required to fetch booking occasion.');
+    return null;
+  }
+
+  try {
+    const occasions = await fetchBookingOccasions(companyId);
+    const occasion = occasions.find((o: { id: string }) => o.id === occasionId);
+    return occasion ? occasion.name : null;
+  } catch (error) {
+    console.error('Failed to fetch booking occasion:', error);
+    return null;
+  }
 };

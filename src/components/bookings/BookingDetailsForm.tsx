@@ -3,12 +3,15 @@ import { Building2, ChevronDown, ChevronUp } from 'lucide-react';
 import { FormField } from '../common/FormField';
 import type { Location, VenueGroup } from '../../types/locations';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { BookingOccasion } from '../../types/bookings';
+
 
 interface BookingFormValues {
   venue_group_id?: string;
   location_id: string;
   booking_source: string;
   booking_type: string;
+  booking_occasion: string;
   booking_seated_date: string;
   booking_seated_time: string;
   covers_adult: number;
@@ -24,6 +27,7 @@ interface BookingDetailsFormProps {
   locations: Location[];
   venueGroups: VenueGroup[];
   selectedVenueGroup: string | undefined;
+  occasions: BookingOccasion[];
 }
 
 export const BookingDetailsForm: React.FC<BookingDetailsFormProps> = ({
@@ -39,6 +43,8 @@ export const BookingDetailsForm: React.FC<BookingDetailsFormProps> = ({
   const filteredLocations = selectedVenueGroup
     ? locations.filter(loc => loc.venue_group_id === selectedVenueGroup)
     : locations || [];
+
+    
 
   return (
     <div className="bg-dark-secondary rounded-lg border border-dark-border">
@@ -136,6 +142,20 @@ export const BookingDetailsForm: React.FC<BookingDetailsFormProps> = ({
               >
                 <option value="Table">Table</option>
                 <option value="Function">Function</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-dark-text-secondary">
+                Booking Occasion
+              </label>
+              <select
+                {...register('booking_occasion')}
+                className="w-full px-4 py-2 bg-dark-secondary border-2 border-dark-border rounded-lg
+                  text-dark-text-primary focus:outline-none focus:ring-2 focus:ring-dark-accent/50"
+              >
+                <option value="">Select an Occasion</option>
+                
               </select>
             </div>
           </div>

@@ -131,6 +131,18 @@ async function fetchTables(companyId: string): Promise<Table[]> {
   return data;
 }
 
+async function fetchBookingOccasions(companyId: string): Promise<Table[]> {
+  const { data, error } = await supabase
+    .from('booking_occasions')
+    .select('*')
+    .eq('company_id', companyId)
+    .eq('is_active', true)
+    .order('name');
+
+  if (error) throw error;
+  return data;
+}
+
 async function fetchBookings(
   companyId: string,
   page: number = 1,
@@ -313,5 +325,6 @@ export {
   fetchBookings,
   updateBooking,
   deleteBooking,
-  subscribeToBookings
+  subscribeToBookings,
+  fetchBookingOccasions
 }

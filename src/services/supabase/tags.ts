@@ -12,7 +12,7 @@ export async function fetchTags(companyId: string, category?: 'contact' | 'booki
       *,
       contact_count:contact_tags(count)
     `)
-    .eq('deleted', false)
+    .eq('is_deleted', false)
     .or(`company_id.eq.${companyId},company_id.is.null`)
     .order('sort_order');
 
@@ -38,7 +38,7 @@ export async function fetchContactTags(contactId: string): Promise<Tag[]> {
       tag:tags (*)
     `)
     .eq('contact_id', contactId)
-    .is('tags.deleted', false); 
+    .is('tags.is_deleted', false); 
 
   if (error) throw error;
   return data.flatMap(item => item.tag as Tag[]);

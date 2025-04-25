@@ -21,7 +21,7 @@ export const createBookingSchema = z.object({
   location_id: z.string().min(1, 'Location is required'),
   booking_source: z.enum(['In house', 'Online', 'Phone', 'Internal']),
   booking_type: z.enum(['Table', 'Function']),
-  booking_occasion: z.string().optional(),
+  booking_occasion_id: z.string().optional(),
   booking_seated_date: z.string().min(1, 'Date is required'),
   booking_seated_time: z.string().min(1, 'Time is required'),
   covers_adult: z.number().min(1, 'At least 1 adult guest is required'),

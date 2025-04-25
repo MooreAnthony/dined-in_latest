@@ -21,6 +21,7 @@ export interface CreateBooking {
   location_group_id?: string | null;
   table_ids?: string[] | null;
   tags?: string[] | null;
+  booking_occasion_id?: string | null;
   covers_adult?: number;
   covers_child?: number;
   guests: number;
@@ -63,6 +64,7 @@ export interface UpdateBooking {
   covers_adult?: number;
   covers_child?: number;
   guests?: number;
+  booking_occasion_id?: string | null;
   special_requests?: string | null;
   notes?: string | null;
   arrived_guests?: number | null;
@@ -103,6 +105,14 @@ export interface Tag {
   id: string;
   name: string;
 }
+
+export interface BookingOccasion {
+  id: string;
+  company_id?: string | null;
+  name: string;
+  is_deleted: boolean;
+}
+
 
 export interface Contact {
   id: string;
@@ -159,10 +169,11 @@ export interface Booking {
   booking_source: string;
   booking_status: string;
   booking_type: string;
-  booking_occasion?: string | null;
+  booking_occasion_id: string | null;
   company_id?: string | null;
   contact_id?: string | null;
   location_id?: string | null;
+  booking_location?: string | null;
   location_group_id?: string | null;
   table_ids?: string[] | null;
   tags?: string[] | null;
